@@ -2,8 +2,8 @@
 set -euo pipefail
 
 MAYA_SRC="${MAYA_SRC:-$HOME/maya-src}"
-CONTAINER_NAME="maya-test3"
-CONTAINER_IMAGE="localhost/maya-test3-rocky9"
+CONTAINER_NAME="maya"
+CONTAINER_IMAGE="localhost/maya-rocky9"
 REPO_DIR="${1:-.}"
 
 if [[ ! -f "$MAYA_SRC/MayaConfig.pit" ]]; then
