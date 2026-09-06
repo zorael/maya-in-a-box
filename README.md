@@ -152,6 +152,15 @@ distrobox stop maya
 distrobox enter maya
 ```
 
+## Uninstallation
+
+```bash
+distrobox stop maya
+distrobox rm maya
+podman image prune
+rm -rf ~/.distrobox/maya
+```
+
 ## Supplemental notes
 
 ### **MtoA**
