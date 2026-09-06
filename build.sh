@@ -12,7 +12,7 @@ if [[ ! -f "$MAYA_SRC/MayaConfig.pit" ]]; then
 fi
 
 echo "[*] podman build"
-podman build --no-cache --security-opt label=disable -v "$MAYA_SRC":/mnt/maya-src:ro \
+podman build --security-opt label=disable -v "$MAYA_SRC":/mnt/maya-src:ro \
     -t "$CONTAINER_IMAGE" "$REPO_DIR"
 
 echo
