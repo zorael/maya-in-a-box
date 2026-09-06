@@ -1,0 +1,24 @@
+#!/bin/bash
+
+DEFAULT_WEB_BROWSER="/usr/bin/brave-browser"
+LICENSE_HELPER=/opt/Autodesk/AdskLicensing/Current/helper/AdskLicensingInstHelper
+
+if ! "$LICENSE_HELPER" list 2>/dev/null | grep -q '"sel_prod_key"'; then
+    echo "[!] Maya not registered, run /opt/maya-install/first-run.sh" >&2
+    exit 1
+fi
+
+export QT_QPA_PLATFORM=xcb
+export GDK_BACKEND=x11
+export XDG_SESSION_TYPE=x11
+export MAYA_DISABLE_ADP=1
+export MAYA_DISABLE_CIP=1
+export MAYA_DISABLE_CER=1
+export BROWSER="$DEFAULT_WEB_BROWSER"
+export DISPLAY="${DISPLAY:-:0}"
+unset WAYLAND_DISPLAY
+unset DESKTOP_SESSION
+unset XDG_CURRENT_DESKTOP
+unset KDE_FULL_SESSION
+
+exec /usr/autodesk/maya2027/bin/maya2027 "$@"
