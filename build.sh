@@ -1,13 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
+# Example custom command:
+# MAYA_SRC=~/maya-extracted CONTAINER_NAME="maya-test" ./build.sh path/to/Containerfile
+
 MAYA_SRC="${MAYA_SRC:-$HOME/maya-src}"
-CONTAINER_NAME="maya"
-CONTAINER_IMAGE="localhost/maya-rocky9"
+CONTAINER_NAME="${CONTAINER_NAME:-maya}"
+CONTAINER_IMAGE="localhost/${CONTAINER_NAME}-rocky9"
 REPO_DIR="${1:-.}"
 
 if [[ ! -f "$MAYA_SRC/MayaConfig.pit" ]]; then
-    echo "[!] \$MAYA_SRC '$MAYA_SRC' doesn't seem to point to a valid extracted Maya installer" >&2
+    echo "[!] \$MAYA_SRC='$MAYA_SRC' doesn't seem to point to a valid extracted Maya installer" >&2
     exit 1
 fi
 
@@ -26,7 +29,7 @@ distrobox enter "$CONTAINER_NAME" -- /opt/maya-install/first-run.sh
 
 if [[ -f "$HOME/.local/bin/maya-run" ]]; then
     echo
-    echo "[!] 'maya-run' script already exists at ~/.local/bin/maya-run; not re-exporting"
+    echo "[!] 'maya-run' script already exists at '~/.local/bin/maya-run'; not re-exporting" >&2
 else
     echo
     echo "[*] Exporting Maya run script to ~/.local/bin/maya-run"
@@ -36,3 +39,6 @@ fi
 
 echo
 echo "[*] Build and setup complete, start Maya with 'maya-run'"
+echo "[*] If '~/.local/bin' is placed earlier in your \$PATH than '/usr/local/bin' is,"
+echo "    the exported 'maya-run' will take priority, even if called from inside the container."
+echo "    Invoke the full path '/usr/local/bin/maya-run' to bypass the exported wrapper."
