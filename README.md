@@ -169,7 +169,7 @@ It's impossible to know whether all the dependencies were identified and install
 ```bash
 distrobox stop maya
 distrobox rm maya
-podman image prune
+podman rmi localhost/maya-rocky9
 rm -rf ~/.distrobox/maya
 ```
 
