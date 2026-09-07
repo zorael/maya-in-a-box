@@ -7,7 +7,19 @@ DEFAULT_WEB_BROWSER="/usr/bin/brave-browser"
 LICENSE_HELPER=/opt/Autodesk/AdskLicensing/Current/helper/AdskLicensingInstHelper
 
 if ! "$LICENSE_HELPER" list 2>/dev/null | grep -q '"sel_prod_key"'; then
-    echo "[!] Maya not registered, run /opt/maya-install/first-run.sh" >&2
+    echo "[!] Maya is not registered, run /opt/maya-install/first-run.sh" >&2
+
+    distrobox-host-exec /usr/bin/notify-send \
+        --expire-time 18000 \
+        --app-name "Maya in a box" \
+        --icon "license" \
+"Maya is not registered" \
+"The <b>first-run.sh</b> script needs to be run to register the Maya license.
+- Inside the container:
+<b>$ /opt/maya-install/first-run.sh</b>
+- Alternatively, on the host:
+<b>$ distrobox enter $CONTAINER_ID -- /opt/maya-install/first-run.sh</b>" 2>/dev/null
+
     exit 1
 fi
 
