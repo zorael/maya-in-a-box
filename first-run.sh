@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-DEFAULT_WEB_BROWSER="brave-browser.desktop"
+DEFAULT_WEB_BROWSER_DESKTOP="brave-browser.desktop"
 
 ###############################################################################
 
@@ -34,8 +34,8 @@ update-desktop-database ~/.local/share/applications
 
 echo "[*] Setting default web browser"
 mkdir -p ~/.config
-xdg-settings set default-web-browser "$DEFAULT_WEB_BROWSER" &>/dev/null || true
-xdg-mime default "$DEFAULT_WEB_BROWSER" x-scheme-handler/http x-scheme-handler/https &>/dev/null || true
+xdg-settings set default-web-browser "$DEFAULT_WEB_BROWSER_DESKTOP" &>/dev/null || true
+xdg-mime default "$DEFAULT_WEB_BROWSER_DESKTOP" x-scheme-handler/http x-scheme-handler/https &>/dev/null || true
 
 ###############################################################################
 
@@ -66,7 +66,7 @@ done
 
 ###############################################################################
 
-if [[ -e "$HOST_HOME/.distroboxrc" ]]; then
+if [[ -f "$HOST_HOME/.distroboxrc" ]]; then
     echo "[*] Invoking .distroboxrc on host"
     distrobox-host-exec sh "$HOST_HOME/.distroboxrc"
 fi
