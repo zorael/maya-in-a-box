@@ -137,6 +137,10 @@ Copy that URL and invoke the `AdskIdentityManager` licensing manager, passing th
 
 Be sure to put the callback URL within quotes.
 
+### Application Home screen is blank
+
+If the Application Home screen is empty, add `--single-process` to the Maya command line (in `maya-run`) to work around the issue. See [**this comment by meepzh**](https://aur.archlinux.org/packages/maya?O=80#comment-871405) on the [**Arch User Repository page for the `maya` package**](https://aur.archlinux.org/packages/maya) for more information.
+
 ### Font errors
 
 If the program starts but you get error messages in the bottom right about missing fonts, then fonts from the distrobox may not have been correctly copied to and imported on the host system.
@@ -152,6 +156,14 @@ distrobox stop maya
 distrobox enter maya
 ```
 
+### "`WebKitWebProcess` has encountered a fatal error and was closed"
+
+This happens (at least) on Wayland but does not seem to be fatal to the Maya start-up/login process. It just happens; ignore it.
+
+### Some features just don't work
+
+It's impossible to know whether all the dependencies were identified and installed. Some features may not work as expected (or at all) if one or more libraries are missing. The place to start is to use `ldd` on any Maya or plugin binaries that seem relevant.
+
 ## Uninstallation
 
 ```bash
@@ -166,10 +178,6 @@ rm -rf ~/.distrobox/maya
 ### **MtoA**
 
 The **Arnold renderer** must be downloaded separately and installed manually, if desired. It requires accepting a separate license agreement. It is available as (something like) `MtoA-5.6.3.1-linux-2027.run` on the Autodesk website. Merely download the file, set it to executable `+x` and run it inside the distrobox with `sudo` permissions.
-
-### "`WebKitWebProcess` has encountered a fatal error and was closed"
-
-This happens (at least) on Wayland but does not seem to be fatal to the Maya start-up/login process. It just happens; ignore it.
 
 ## AI
 
