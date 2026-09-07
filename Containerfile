@@ -93,7 +93,8 @@ RUN dnf config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com
     && dnf install -y brave-browser \
     && dnf clean all
 
-# Maya complains about missing libaudiofile.so in the script editor on startup
+# Maya complains about missing libaudiofile.so in the script editor on startup.
+# It's there though, just under a different name.
 RUN ln -s /usr/lib64/libaudiofile.so.1 /usr/lib64/libaudiofile.so
 
 COPY --chmod=0755 maya-run /usr/local/bin/
