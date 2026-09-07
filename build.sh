@@ -23,21 +23,20 @@ echo "[*] distrobox create"
 distrobox create --name "$CONTAINER_NAME" --image "$CONTAINER_IMAGE" \
     --home ~/.distrobox/"$CONTAINER_NAME" --init
 
-echo
+# There is already an empty space from the previous command
+#echo
 echo "[*] distrobox finalise and first run"
 distrobox enter "$CONTAINER_NAME" -- /opt/maya-install/first-run.sh
 
 if [[ -f "$HOME/.local/bin/maya-run" ]]; then
-    echo
-    echo "[!] 'maya-run' script already exists at '~/.local/bin/maya-run'; not re-exporting" >&2
+    echo "[!] 'maya-run' wrapper script already exists at '~/.local/bin/maya-run'; not re-exporting" >&2
 else
-    echo
-    echo "[*] Exporting Maya run script to ~/.local/bin/maya-run"
+    echo "[*] Exporting Maya run script"
     mkdir -p ~/.local/bin
     distrobox enter "$CONTAINER_NAME" -- distrobox-export --bin /usr/local/bin/maya-run
 fi
 
-echo
+echo "---"
 echo "[*] Build and setup complete, start Maya with 'maya-run'"
 echo "[*] Inside the container, if '~/.local/bin' is placed earlier in your \$PATH"
 echo "    than '/usr/local/bin' is, the exported host-system 'maya-run' will take priority."
