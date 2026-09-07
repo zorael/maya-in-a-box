@@ -173,10 +173,10 @@ This happens (at least) on Wayland but does not seem to be fatal to the Maya sta
 
 ## AI
 
-[**Claude**](http://claude.ai) was used to help troubleshoot getting Maya set up in the distrobox environment.
+[**Claude**](http://claude.ai) was used to help troubleshoot getting Maya set up in the distrobox environment and to teach container-fu in general.
 
 ## License and Copyright
 
 This container project is licensed under the MIT License; see the [**LICENSE**](LICENSE) file for details.
 
-[**Autodesk Maya**](https://www.autodesk.com/products/maya/overview) is Copyright 1997–2026 [**Autodesk, Inc**](https://autodesk.com).
+[**Autodesk Maya**](https://www.autodesk.com/products/maya/overview) is Copyright 1997–2026 [**Autodesk, Inc**](https://autodesk.com) and is in no way affiliated with this project.
