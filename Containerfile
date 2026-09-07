@@ -11,27 +11,52 @@ FROM quay.io/toolbx-images/rockylinux-toolbox:9
 # Runtime dependencies for Maya, its ancillaries and its plugins.
 # Maya's RPMs declare almost nothing, so this list was generated manually
 # by parsing ldd output, plus some heavy trial and error.
-# This list can definitely be minimised, if someone really wants to do that.
-# compat-openssl11 is required as Maya 2027 depends on OpenSSL 1.1 but
-# Rocky Linux 9 ships with OpenSSL 3 by default.
 RUN dnf install -y \
-        alsa-lib audiofile compat-openssl11 desktop-file-utils fontconfig \
-        freetype glibc-all-langpacks glibc-locale-source glx-utils gtk2 \
-        libX11-xcb libXScrnSaver libXcomposite libXcursor libXdamage libXi \
-        libXinerama libXp libXpm libXrandr libXrender libXtst libatomic \
-        libcanberra-gtk2 liberation-fonts libglvnd libglvnd-glx libglvnd-opengl \
-        libjpeg libjpeg-turbo libmng libnsl libpng libpng15 libpq libtiff \
-        libvdpau libxkbcommon libxkbcommon-x11 libxkbfile mesa-dri-drivers \
-        mesa-libGL mesa-libGLU mtdev nspr nss nss-util pciutils-libs \
-        pcre2-utf16 pcre2-utf32 pinentry tcsh urw-base35-fonts webkit2gtk3 \
-        whois xcb-util-cursor xcb-util-image xcb-util-keysyms \
-        xcb-util-renderutil xcb-util-wm xdg-utils xorg-x11-fonts-100dpi \
-        xorg-x11-fonts-75dpi xorg-x11-fonts-ISO8859-1-100dpi \
-        xorg-x11-fonts-ISO8859-1-75dpi xset zsh \
+        audiofile \
+        glx-utils \
+        libXScrnSaver \
+        libXaw \
+        libXpm \
+        libglew \
+        libgs \
+        libicu \
+        libpng12 \
+        libtiff \
+        libva \
+        libvdpau \
+        libwayland-server \
+        libxkbcommon-x11 \
+        libxkbfile \
+        webkit2gtk3 \
+        xorg-x11-fonts-100dpi \
+        xorg-x11-fonts-75dpi \
+        xorg-x11-fonts-ISO8859-1-100dpi \
+        xorg-x11-fonts-ISO8859-1-75dpi \
+        xorg-x11-server-utils \
     && dnf clean all
 
-# curl is already installed as curl-minimal, hence the --allowerasing to allow
-# for replacing it with the full curl package.
+# Legacy list. Fall back to this if the slim list above is insufficient.
+#
+# compat-openssl11 is required as Maya 2027 depends on OpenSSL 1.1 but
+# Rocky Linux 9 ships with OpenSSL 3 by default.
+#RUN dnf install -y \
+#        alsa-lib audiofile compat-openssl11 desktop-file-utils fontconfig \
+#        freetype glibc-all-langpacks glibc-locale-source glx-utils gtk2 \
+#        libX11-xcb libXScrnSaver libXcomposite libXcursor libXdamage libXi \
+#        libXinerama libXp libXpm libXrandr libXrender libXtst libatomic \
+#        libcanberra-gtk2 liberation-fonts libglvnd libglvnd-glx libglvnd-opengl \
+#        libjpeg libjpeg-turbo libmng libnsl libpng libpng15 libpq libtiff \
+#        libvdpau libxkbcommon libxkbcommon-x11 libxkbfile mesa-dri-drivers \
+#        mesa-libGL mesa-libGLU mtdev nspr nss nss-util pciutils-libs \
+#        pcre2-utf16 pcre2-utf32 pinentry tcsh urw-base35-fonts webkit2gtk3 \
+#        whois xcb-util-cursor xcb-util-image xcb-util-keysyms \
+#        xcb-util-renderutil xcb-util-wm xdg-utils xorg-x11-fonts-100dpi \
+#        xorg-x11-fonts-75dpi xorg-x11-fonts-ISO8859-1-100dpi \
+#        xorg-x11-fonts-ISO8859-1-75dpi xset zsh \
+#    && dnf clean all
+
+# curl is already installed as curl-minimal, so the --allowerasing is needed to
+# allow for replacing it with the full curl package.
 RUN dnf install -y --allowerasing curl \
     && dnf clean all
 
