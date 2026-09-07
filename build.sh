@@ -39,6 +39,6 @@ fi
 
 echo
 echo "[*] Build and setup complete, start Maya with 'maya-run'"
-echo "[*] If '~/.local/bin' is placed earlier in your \$PATH than '/usr/local/bin' is,"
-echo "    the exported 'maya-run' will take priority, even if called from inside the container."
+echo "[*] Inside the container, if '~/.local/bin' is placed earlier in your \$PATH"
+echo "    than '/usr/local/bin' is, the exported host-system 'maya-run' will take priority."
 echo "    Invoke the full path '/usr/local/bin/maya-run' to bypass the exported wrapper."
