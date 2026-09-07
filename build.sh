@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Example custom command:
-# MAYA_SRC=~/maya-extracted CONTAINER_NAME="maya-test" ./build.sh path/to/Containerfile
+# MAYA_SRC=~/maya-extracted CONTAINER_NAME="maya-test" ./build.sh path/to/dir/with/Containerfile
 
 MAYA_SRC="${MAYA_SRC:-$HOME/maya-src}"
 CONTAINER_NAME="${CONTAINER_NAME:-maya}"
