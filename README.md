@@ -14,9 +14,39 @@ Exceptions being **Flow** and **MayaFlow** that require a hosted Flow server.
 
 Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**EndeavourOS**](https://endeavouros.com) running Wayland sessions. It should work even better under X11.
 
-## Instructions
+## TOC
 
-> Keep in mind: the generated container will contain software that may not be redistributed freely.
+- [Reminder](#reminder)
+- [Instructions](#instructions)
+  - [Prepare `.distroboxrc`](#prepare-distroboxrc)
+  - [Automation script](#automation-script)
+  - [Build the container](#build-the-container)
+  - [Create a distrobox of the image](#create-a-distrobox-of-the-image)
+  - [First-time setup](#first-time-setup)
+  - [Expose `maya-run`](#expose-maya-run)
+  - [Start Maya](#start-maya)
+- [Uninstallation](#uninstallation)
+- [Troubleshooting](#troubleshooting)
+  - [Missing `xhost`](#missing-xhost)
+  - [Program starts but never opens a browser](#program-starts-but-never-opens-a-browser)
+  - [Browser login works but the "open product" button doesn't](#browser-login-works-but-the-open-product-button-doesnt)
+  - [Application Home screen is blank](#application-home-screen-is-blank)
+  - [Font errors](#font-errors)
+  - ["WebKitWebProcess has encountered a fatal error and was closed"](#webkitwebprocess-has-encountered-a-fatal-error-and-was-closed)
+  - [Some features just don't work](#some-features-just-dont-work)
+- [Supplementary notes](#supplementary-notes)
+  - [.distroboxrc](#distroboxrc)
+  - [MtoA](#mtoa)
+- [AI](#ai)
+- [License and Copyright](#license-and-copyright)
+
+---
+
+## Reminder
+
+The generated container will contain software that may not be redistributed freely.
+
+## Instructions
 
 Maya is licensed software and must be manually obtained from [**the Autodesk website**](https://manage.autodesk.com/products).
 
@@ -38,7 +68,7 @@ The downloaded tarball (full name like `Autodesk_Maya_2027_2_Update_Linux_64bit.
 
 You must also install [`distrobox`](https://github.com/89luca89/distrobox) and [`podman`](https://podman.io). Refer to your repositories.
 
-### Prepare `.distroboxrc`
+### Prepare [`.distroboxrc`](distroboxrc)
 
 Add to [`~/.distroboxrc`](distroboxrc), creating it if necessary:
 
@@ -84,9 +114,9 @@ The `--init` is required to allow for systemd to manage the licensing daemon.
 distrobox enter maya -- /opt/maya-install/first-run.sh
 ```
 
-### Expose `maya-run`
+### Expose [`maya-run`](maya-run)
 
-Export the `maya-run` start-up script to be available to the host system.
+Export the [`maya-run`](maya-run) start-up script to be available to the host system.
 
 ```bash
 distrobox enter maya -- distrobox-export --bin /usr/local/bin/maya-run
@@ -99,6 +129,15 @@ maya-run
 ```
 
 Run it in a terminal the first time to catch any potential error messages.
+
+## Uninstallation
+
+```bash
+distrobox stop maya
+distrobox rm maya
+podman rmi localhost/maya-rocky9
+rm -rf ~/.distrobox/maya
+```
 
 ## Troubleshooting
 
@@ -163,15 +202,6 @@ This happens (at least) on Wayland but does not seem to be fatal to the Maya sta
 ### Some features just don't work
 
 It's impossible to know whether all the dependencies were identified and installed. Some features may not work as expected (or at all) if one or more libraries are missing. The place to start is to use `ldd` on any Maya or plugin binaries that seem relevant.
-
-## Uninstallation
-
-```bash
-distrobox stop maya
-distrobox rm maya
-podman rmi localhost/maya-rocky9
-rm -rf ~/.distrobox/maya
-```
 
 ## Supplementary notes
 
