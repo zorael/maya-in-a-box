@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# If the Application Home screen is blank: https://aur.archlinux.org/packages/maya?O=80#comment-871405
+# Just add --single-process to the Maya command line to work around the issue.
+
 DEFAULT_WEB_BROWSER="/usr/bin/brave-browser"
 LICENSE_HELPER=/opt/Autodesk/AdskLicensing/Current/helper/AdskLicensingInstHelper
 
