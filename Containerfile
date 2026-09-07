@@ -8,6 +8,10 @@
 
 FROM quay.io/toolbx-images/rockylinux-toolbox:9
 
+# Don't rely on the toolbox base image to have EPEL enabled.
+RUN dnf install -y epel-release \
+    && dnf clean all
+
 # Runtime dependencies for Maya, its ancillaries and its plugins.
 # Maya's RPMs declare almost nothing, so this list was generated manually
 # by parsing ldd output, plus some heavy trial and error.
