@@ -143,7 +143,7 @@ rm -rf ~/.distrobox/maya
 
 ### Missing `xhost`
 
-If the program doesn't start upon calling `maya-run` with an error about authorisation or display issues, make sure you have the `xhost` tool installed.
+If the program doesn't start upon calling [`maya-run`](maya-run) with an error about authorisation or display issues, make sure you have the `xhost` tool installed.
 
 ```text
 Authorization required, but no authorization protocol specified
@@ -178,7 +178,7 @@ Be sure to put the callback URL within quotes.
 
 ### Application Home screen is blank
 
-If the Application Home screen is empty, add `--single-process` to the Maya command line (in `maya-run`) to work around the issue. See [**this comment by meepzh**](https://aur.archlinux.org/packages/maya?O=80#comment-871405) on the [**Arch User Repository page for the `maya` package**](https://aur.archlinux.org/packages/maya) for more information.
+If the Application Home screen is empty, add `--single-process` to the Maya command line (in [`maya-run`](maya-run)) to work around the issue. See [**this comment by meepzh**](https://aur.archlinux.org/packages/maya?O=80#comment-871405) on the [**Arch User Repository page for the `maya` package**](https://aur.archlinux.org/packages/maya) for more information.
 
 ### Font errors
 
@@ -188,7 +188,7 @@ If the program starts but you get error messages in the bottom right about missi
 Failed trying to load font : -*-helvetica-bold-r-normal-*-11-*-*-*-*-*-iso8859-1 //
 ```
 
-These fonts are copied from the container to the host system as part of the `first-run.sh` script that should be run once for this kind of one-time setup. It then invokes `.distroboxrc` on the host system, so the font paths *should* be available right away. If you still see errors, verify that `~/.distroboxrc` is in place and has the expected contents; if not, fix it, then stop the distrobox and re-enter.
+These fonts are copied from the container to the host system as part of the [`first-run.sh`](first-run.sh) script that should be run once for this kind of one-time setup. It then invokes [`.distroboxrc`](distroboxrc) on the host system, so the font paths *should* be available right away. If you still see errors, verify that [`~/.distroboxrc`](distroboxrc) is in place and has the expected contents; if not, fix it, then stop the distrobox and re-enter.
 
 ```bash
 distrobox stop maya
