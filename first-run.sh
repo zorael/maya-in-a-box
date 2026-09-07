@@ -45,10 +45,10 @@ HOST_HOME="/run/host/home/$(id -un)"
 
 if [[ ! -d "$HOST_HOME" ]]; then
     echo "[!] Failed to resolve host home path" >&2
-    exit 1  # also skips host-exec of .distroboxrc below
+    exit 1  # also skips .distroboxrc steps below; they require $HOST_HOME
 fi
 
-FONT_DIR="${HOST_HOME}/.local/share/x11-fonts"
+FONT_DIR="$HOST_HOME/.local/share/x11-fonts"
 mkdir -p "$FONT_DIR"
 
 for subdir in 100dpi 75dpi; do
