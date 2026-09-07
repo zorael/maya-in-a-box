@@ -173,7 +173,13 @@ podman rmi localhost/maya-rocky9
 rm -rf ~/.distrobox/maya
 ```
 
-## Supplemental notes
+## Supplementary notes
+
+### [`.distroboxrc`](distroboxrc)
+
+The purpose of this file is to add font paths on the host system, "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet.
+
+To work around this, immediately after having copied the fonts, [`first-run.sh`](first-run.sh) *executes* [`.distroboxrc`](distroboxrc) using `sh` on the host system. This means that if your file contains anything extra, that extra something has to be safe to be run more than once. It also means that the file should try to keep to `sh` syntax and avoid features specific to other shells, like `bash`.
 
 ### **MtoA**
 
