@@ -66,7 +66,15 @@ done
 
 ###############################################################################
 
-if [[ -e "$HOST_HOME/.distroboxrc" ]]; then
+if [[ -f "$HOST_HOME/.distroboxrc" ]] && [[ ! -f "$HOME/.distroboxrc" ]]; then
+    echo "[*] Copying host .distroboxrc to container home"
+    #ln -s "$HOST_HOME/.distroboxrc" ~/.distroboxrc  # bad idea? better?
+    cp "$HOST_HOME/.distroboxrc" ~/.distroboxrc
+fi
+
+###############################################################################
+
+if [[ -f "$HOST_HOME/.distroboxrc" ]]; then
     echo "[*] Invoking .distroboxrc on host"
     distrobox-host-exec sh "$HOST_HOME/.distroboxrc"
 fi
