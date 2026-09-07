@@ -14,10 +14,10 @@ FROM quay.io/toolbx-images/rockylinux-toolbox:9
 RUN dnf install -y \
         audiofile \
         glx-utils \
+        libGLEW \
         libXScrnSaver \
         libXaw \
         libXpm \
-        libglew \
         libgs \
         libicu \
         libpng12 \
@@ -27,6 +27,7 @@ RUN dnf install -y \
         libwayland-server \
         libxkbcommon-x11 \
         libxkbfile \
+        ocl-icd \
         webkit2gtk3 \
         xorg-x11-fonts-100dpi \
         xorg-x11-fonts-75dpi \
