@@ -2,28 +2,47 @@
 set -euo pipefail
 
 # Example custom command:
-# MAYA_SRC=~/maya-extracted CONTAINER_NAME="maya-test" ./build.sh path/to/dir/with/Containerfile
+# MAYA_SRC=~/maya-extracted CONTAINER_NAME="maya-test" ./build.sh --no-cache path/to/dir/with/Containerfile
 
 MAYA_SRC="${MAYA_SRC:-$HOME/maya-src}"
 CONTAINER_NAME="${CONTAINER_NAME:-maya}"
 CONTAINER_IMAGE="localhost/${CONTAINER_NAME}-rocky9"
-REPO_DIR="${1:-.}"
 
 if [[ ! -f "$MAYA_SRC/MayaConfig.pit" ]]; then
-    echo "[!] \$MAYA_SRC='$MAYA_SRC' doesn't seem to point to a valid extracted Maya installer" >&2
+    echo "[!] MAYA_SRC='$MAYA_SRC' doesn't seem to point to a valid extracted Maya installer" >&2
+    should_exit=1
+fi
+
+if podman container exists "$CONTAINER_NAME"; then
+    echo "[!] CONTAINER_NAME='$CONTAINER_NAME' seems to already exist" >&2
+    should_exit=1
+fi
+
+if [[ "$should_exit" ]]; then
+    # Something is wrong
     exit 1
 fi
 
+# If no arguments were passed to this script, set them to a single "." (as $1)
+# so podman build looks to the current directory for the Containerfile if nothing else was supplied
+[[ $# -eq 0 ]] && set -- "."
+
 echo "[*] podman build"
-podman build --security-opt label=disable -v "$MAYA_SRC":/mnt/maya-src:ro \
-    -t "$CONTAINER_IMAGE" "$REPO_DIR"
+podman build \
+    --security-opt label=disable \
+    --volume "$MAYA_SRC":/mnt/maya-src:ro \
+    --tag "$CONTAINER_IMAGE" \
+    "$@"
 
 echo
 echo "[*] distrobox create"
-distrobox create --name "$CONTAINER_NAME" --image "$CONTAINER_IMAGE" \
-    --home ~/.distrobox/"$CONTAINER_NAME" --init
+distrobox create \
+    --name "$CONTAINER_NAME" \
+    --image "$CONTAINER_IMAGE" \
+    --home ~/.distrobox/"$CONTAINER_NAME" \
+    --init
 
-# There is already an empty space from the previous command
+# There is already a trailing empty space output from the previous command
 #echo
 echo "[*] distrobox finalise and first run"
 distrobox enter "$CONTAINER_NAME" -- /opt/maya-install/first-run.sh
