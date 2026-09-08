@@ -16,7 +16,7 @@ Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**Endeavou
 
 ## TOC
 
-- [Reminder](#reminder)
+- [**Reminder**](#reminder)
 - [Instructions](#instructions)
   - [Prepare `.distroboxrc`](#prepare-distroboxrc)
   - [Automation script](#automation-script)
@@ -35,14 +35,15 @@ Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**Endeavou
   - ["WebKitWebProcess has encountered a fatal error and was closed"](#webkitwebprocess-has-encountered-a-fatal-error-and-was-closed)
   - [Some features just don't work](#some-features-just-dont-work)
 - [Supplementary notes](#supplementary-notes)
-  - [.distroboxrc](#distroboxrc)
+  - [`.distroboxrc`](#distroboxrc)
+  - [`$HOME`](#home)
   - [MtoA](#mtoa)
 - [AI](#ai)
 - [License and Copyright](#license-and-copyright)
 
 ---
 
-## Reminder
+## **Reminder**
 
 The generated container will contain software that may not be redistributed freely.
 
@@ -156,7 +157,7 @@ Once installed, stop the container with `distrobox stop maya` and then re-enter 
 
 ### Program starts but never opens a browser
 
-Verify that you aren't running more than one distrobox simultaneously; each distrobox runs its own licensing daemon, and multiple instances collide. `distrobox stop` other running distroboxes before starting a new one.
+Verify that you aren't running more than one Maya distrobox simultaneously; each distrobox runs its own licensing daemon, and multiple instances can seemingly collide. `distrobox stop` other running distroboxes before starting a new one.
 
 ### Browser login works but the "open product" button doesn't
 
@@ -166,9 +167,9 @@ If it's seemingly doing nothing, first verify that it isn't actually working; it
 
 The workaround is otherwise to intercept the callback URL that the browser is supposed to pass onto the licensing manager, and then just call it manually in the distrobox.
 
-As the installed browser automatically pops up (by default [**Brave**](https://brave.com)) as part of Maya's Autodesk account login procedure, hit **F12** to open the developer tools, then go to the Networks tab. Perform the normal login until you get to the "open product" button and finally the non-working "Open Autodesk Identity Manager" button. Look for a callback URL in the network requests to show up when you click it. It should be a long string that starts with something like `adskidmgr://`.
+As the installed browser automatically pops up (by default [**Brave**](https://brave.com)) as part of Maya's Autodesk account login procedure, hit **F12** to open the developer tools, then go to the **Networks** tab. Perform the normal login until you get to the "**Open Product**" button and finally the non-working "**Open Autodesk Identity Manager**" button (assuming it ever appears). Look for a callback URL in the network requests to show up when you click it. It should be a long string that starts with something like `adskidmgr://`.
 
-Copy that URL and invoke the `AdskIdentityManager` licensing manager, passing the URL as argument. At this point Maya should still be waiting for the login to complete.
+Copy that URL and invoke the `AdskIdentityManager` licensing manager, passing the URL as argument. At this point Maya must still be waiting for the login to complete.
 
 ```bash
 /opt/Autodesk/AdskIdentityManager/Current/AdskIdentityManager "adskidmgr://..."
@@ -188,7 +189,7 @@ If the program starts but you get error messages in the bottom right about missi
 Failed trying to load font : -*-helvetica-bold-r-normal-*-11-*-*-*-*-*-iso8859-1 //
 ```
 
-These fonts are copied from the container to the host system as part of the [`first-run.sh`](first-run.sh) script that should be run once for this kind of one-time setup. It then invokes [`.distroboxrc`](distroboxrc) on the host system, so the font paths *should* be available right away. If you still see errors, verify that [`~/.distroboxrc`](distroboxrc) is in place and has the expected contents; if not, fix it, then stop the distrobox and re-enter.
+These fonts are copied from the container to the host system as part of the [`first-run.sh`](first-run.sh) script that should be run once after distrobox creation. It then invokes [`.distroboxrc`](distroboxrc) on the host system, so the font paths *should* be available right away. If you still see errors, verify that [`~/.distroboxrc`](distroboxrc) is in place and has the expected contents; if not, fix it, then stop the distrobox and re-enter.
 
 ```bash
 distrobox stop maya
@@ -210,6 +211,12 @@ It's impossible to know whether all the dependencies were identified and install
 The purpose of this file is to add font paths on the host system, "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet.
 
 To work around this, immediately after having copied the fonts, [`first-run.sh`](first-run.sh) *executes* [`.distroboxrc`](distroboxrc) using `sh` on the host system. This means that if your file contains anything extra, that extra something has to be safe to be run more than once. It also means that the file should try to keep to `sh` syntax and avoid features specific to other shells, like `bash`.
+
+### `$HOME`
+
+The `distrobox create` command given in the instructions of this `README.md` (and the one used in the [`build.sh`](build.sh) script) sets up a separate `$HOME` for the distrobox environment. This is technically entirely optional and a home can safely be shared between the host and the container, but sharing *may* cause problems here with the licensing handshake of the Autodesk login sequence. It also may not, so feel free to disable it.
+
+If you can't find your files, look to `~/.distrobox/maya` on the host system. (Replace `maya` with the name of your Maya distrobox, if different.)
 
 ### **MtoA**
 
