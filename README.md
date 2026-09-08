@@ -1,6 +1,6 @@
 # Maya 2027 in a box
 
-Creates a distrobox container for [**Maya 2027**](https://www.autodesk.com/products/maya/overview) based on [**Rocky Linux 9**](https://rockylinux.org), which is the supported base for Maya 2027.
+Creates a distrobox container for [**Maya 2027**](https://www.autodesk.com/products/maya/overview) based on [**Rocky Linux 9**](https://rockylinux.org), which is [the only\* officially supported distribution](https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-Requirements-for-Autodesk-Maya-2027.html) for it (alongside [**Red Hat Enterprise Linux**](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)).
 
 Plugins that are included in the main Maya download are installed automatically:
 
@@ -10,9 +10,9 @@ Plugins that are included in the main Maya download are installed automatically:
 - **FlowRetopology**
 - **LookdevX**
 
-Exceptions being **Flow** and **MayaFlow** that require a hosted Flow server.
+Exceptions being **Flow** and **MayaFlow** that require a hosted Flow server. The [**Arnold renderer**](#arnold-renderer) must additionally be installed separately.
 
-Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**EndeavourOS**](https://endeavouros.com) running Wayland sessions. It should work even better under X11.
+Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**EndeavourOS**](https://endeavouros.com) running Wayland sessions (via Xwayland). It should work even better under X11.
 
 ## TOC
 
@@ -37,7 +37,7 @@ Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**Endeavou
 - [Supplementary notes](#supplementary-notes)
   - [`.distroboxrc`](#distroboxrc)
   - [`$HOME`](#home)
-  - [MtoA](#mtoa)
+  - [Arnold renderer](#arnold-renderer)
 - [AI](#ai)
 - [License and Copyright](#license-and-copyright)
 
@@ -49,7 +49,7 @@ The generated container will contain software that may not be redistributed free
 
 ## Instructions
 
-Maya is licensed software and must be manually obtained from [**the Autodesk website**](https://manage.autodesk.com/products).
+Maya is licensed software and must be manually obtained from [**the Autodesk Maya page**](https://manage.autodesk.com/products/MAYA?version=2027&platform=LNUX64).
 
 The downloaded tarball (full name like `Autodesk_Maya_2027_2_Update_Linux_64bit.tgz`) should be extracted to `~/maya-src/`, creating a directory structure like the following:
 
@@ -87,14 +87,18 @@ xset fp rehash 2>/dev/null || true
 
 ### Automation script
 
-Included in the repository is a [`build.sh`](build.sh) script that **automates the following setup**. If it doesn't work, then just follow the instructions manually as outlined below.
+Included in the repository is a [`build.sh`](build.sh) script that **automates the following setup**. If it doesn't work, then just follow the instructions manually as outlined below. If you figure out what went wrong, [please file a GitHub issue](https://github.com/zorael/maya-in-a-box/issues/new).
 
 ### Build the container
 
 Run the following, replacing `$REPO_DIR` with the path to your clone of this repository:
 
 ```bash
-podman build --security-opt label=disable -v ~/maya-src:/mnt/maya-src:ro -t localhost/maya-rocky9 "$REPO_DIR"
+podman build \
+    --security-opt label=disable \
+    -v ~/maya-src:/mnt/maya-src:ro \
+    -t localhost/maya-rocky9 \
+    "$REPO_DIR"
 ```
 
 The `--security-opt label=disable` option is necessary to avoid SELinux issues when creating the image.
@@ -104,10 +108,14 @@ This will take *several* minutes.
 ### Create a distrobox of the image
 
 ```bash
-distrobox create --name maya --image localhost/maya-rocky9 --home ~/.distrobox/maya --init
+distrobox create \
+    --name maya \
+    --image localhost/maya-rocky9 \
+    --home ~/.distrobox/maya \
+    --init
 ```
 
-The `--init` is required to allow for systemd to manage the licensing daemon.
+The `--init` is required to allow for **systemd** to manage the licensing daemon.
 
 ### First-time setup
 
@@ -144,7 +152,7 @@ rm -rf ~/.distrobox/maya
 
 ### Missing `xhost`
 
-If the program doesn't start upon calling [`maya-run`](maya-run) with an error about authorisation or display issues, make sure you have the `xhost` tool installed.
+If the program doesn't start upon calling [`maya-run`](maya-run), giving an error about authorisation or display issues, make sure you have the `xhost` tool installed on the host.
 
 ```text
 Authorization required, but no authorization protocol specified
@@ -157,19 +165,21 @@ Once installed, stop the container with `distrobox stop maya` and then re-enter 
 
 ### Program starts but never opens a browser
 
+Sometimes with 30-second long delays between steps, as if something is timing out.
+
 Verify that you aren't running more than one Maya distrobox simultaneously; each distrobox runs its own licensing daemon, and multiple instances can seemingly collide. `distrobox stop` other running distroboxes before starting a new one.
 
 ### Browser login works but the "open product" button doesn't
 
-It may either do nothing, or it may ask for what program should be used to open the link.
+When you click "open product" in the browser, the server returns an `adskidmgr://` *callback URL* that is meant to be passed on to and handled by the Autodesk licensing manager. If it isn't configured correctly and it doesn't resolve the URL scheme as something to be handled by the licensing manager, it may either silently do nothing, or it may pop up a list of applications to choose between; neither of which is what you wanted.
 
 If it's seemingly doing nothing, first verify that it isn't actually working; it may be that the license was established and Maya is just taking a long time to start up in the background. Refer to the progress bar in the Maya splash window.
 
 The workaround is otherwise to intercept the callback URL that the browser is supposed to pass onto the licensing manager, and then just call it manually in the distrobox.
 
-As the installed browser automatically pops up (by default [**Brave**](https://brave.com)) as part of Maya's Autodesk account login procedure, hit **F12** to open the developer tools, then go to the **Networks** tab. Perform the normal login until you get to the "**Open Product**" button and finally the non-working "**Open Autodesk Identity Manager**" button (assuming it ever appears). Look for a callback URL in the network requests to show up when you click it. It should be a long string that starts with something like `adskidmgr://`.
+As the installed browser automatically pops up (by default [**Brave**](https://brave.com)) as part of Maya's Autodesk account login procedure, hit **F12** to open the developer tools, then go to the **Networks** tab. Perform the normal login until you get to the "**Open Product**" button and finally the non-working "**Open Autodesk Identity Manager**" button (assuming it ever appears). Look for a callback URL in the network requests to show up when you click it. Again: `adskidmgr://`.
 
-Copy that URL and invoke the `AdskIdentityManager` licensing manager, passing the URL as argument. At this point Maya must still be waiting for the login to complete.
+Copy that callback URL and invoke the `AdskIdentityManager` licensing manager in a terminal, passing the URL as argument. At this point Maya must still be waiting for the login to complete.
 
 ```bash
 /opt/Autodesk/AdskIdentityManager/Current/AdskIdentityManager "adskidmgr://..."
@@ -183,7 +193,7 @@ If the Application Home screen is empty, add `--single-process` to the Maya comm
 
 ### Font errors
 
-If the program starts but you get error messages in the bottom right about missing fonts, then fonts from the distrobox may not have been correctly copied to and imported on the host system.
+If the program starts but you get error messages in the bottom right about fonts failing to load, then fonts from the distrobox may not have been correctly [copied to (and imported on) the host system](#distroboxrc).
 
 ```text
 Failed trying to load font : -*-helvetica-bold-r-normal-*-11-*-*-*-*-*-iso8859-1 //
@@ -208,19 +218,19 @@ It's impossible to know whether all the dependencies were identified and install
 
 ### [`.distroboxrc`](distroboxrc)
 
-The purpose of this file is to add font paths on the host system, "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet.
+The purpose of this file is to [add font paths on the host system](#font-errors), "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet and you get a sequencing problem.
 
 To work around this, immediately after having copied the fonts, [`first-run.sh`](first-run.sh) *executes* [`.distroboxrc`](distroboxrc) using `sh` on the host system. This means that if your file contains anything extra, that extra something has to be safe to be run more than once. It also means that the file should try to keep to `sh` syntax and avoid features specific to other shells, like `bash`.
 
 ### `$HOME`
 
-The `distrobox create` command given in the instructions of this `README.md` (and the one used in the [`build.sh`](build.sh) script) sets up a separate `$HOME` for the distrobox environment. This is technically entirely optional and a home can safely be shared between the host and the container, but sharing *may* cause problems here with the licensing handshake of the Autodesk login sequence. It also may not, so feel free to disable it.
+The `distrobox create` command given in the instructions of this `README.md` (and the one used in the [`build.sh`](build.sh) script) sets up a separate `$HOME` for the distrobox environment. This is technically entirely optional and a home can normally be safely shared between the host and the container, but sharing *may* cause problems here with the licensing handshake of the Autodesk login sequence. It also may not, so feel free to disable it.
 
 If you can't find your files, look to `~/.distrobox/maya` on the host system. (Replace `maya` with the name of your Maya distrobox, if different.)
 
-### **MtoA**
+### Arnold renderer
 
-The **Arnold renderer** must be downloaded separately and installed manually, if desired. It requires accepting a separate license agreement. It is available as (something like) `MtoA-5.6.3.1-linux-2027.run` on the Autodesk website. Merely download the file, set it to executable `+x` and run it inside the distrobox with `sudo` permissions.
+The [**Arnold renderer**](https://www.autodesk.com/products/arnold/overview) is not included in the Maya 2027 tarball and so must be manually downloaded and installed, if desired. It requires accepting a separate license agreement by keyboard input, and thus cannot be pre-installed into the container image. It is available as (something like) `MtoA-5.x.y.z-linux-2027.run` on [**the Autodesk Maya page**](https://manage.autodesk.com/products/MAYA?version=2027&platform=LNUX64) after selecting to list **Extensions**. Merely download the file, set it executable `+x` and run it inside the distrobox with `sudo` permissions. Take care to download the latest version.
 
 ## AI
 
@@ -228,6 +238,6 @@ The **Arnold renderer** must be downloaded separately and installed manually, if
 
 ## License and Copyright
 
-This container project is licensed under the MIT License; see the [**LICENSE**](LICENSE) file for details.
+This project is licensed under the [**MIT License**](https://choosealicense.com/licenses/mit); see the [**LICENSE**](LICENSE) file for details.
 
 [**Autodesk Maya**](https://www.autodesk.com/products/maya/overview) is Copyright 1997–2026 [**Autodesk, Inc**](https://autodesk.com) and is in no way affiliated with this project.
