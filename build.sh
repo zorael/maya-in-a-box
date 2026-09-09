@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Example custom command:
-# MAYA_SRC=~/maya-extracted CONTAINER_NAME="maya-test" ./build.sh --no-cache path/to/dir/with/Containerfile
+# MAYA_SRC=~/maya-extracted CONTAINER_NAME="maya-test" SKIP_SEPARATE_HOME=1 \
+#   ./build.sh --no-cache path/to/dir/with/Containerfile
 
 MAYA_SRC="${MAYA_SRC:-$HOME/maya-src}"
 CONTAINER_NAME="${CONTAINER_NAME:-maya}"
@@ -34,12 +35,16 @@ podman build \
     --tag "$CONTAINER_IMAGE" \
     "$@"
 
+# Allow for disabling a separate home for the distrobox by setting SKIP_SEPARATE_HOME
+HOME_ARGS=()
+[[ -n "${SKIP_SEPARATE_HOME:-}" ]] || HOME_ARGS=( --home "$HOME/.distrobox/$CONTAINER_NAME" )
+
 echo
 echo "[*] distrobox create"
 distrobox create \
     --name "$CONTAINER_NAME" \
     --image "$CONTAINER_IMAGE" \
-    --home ~/.distrobox/"$CONTAINER_NAME" \
+    "${HOME_ARGS[@]}" \
     --init
 
 # There is already a trailing empty space output from the previous command
