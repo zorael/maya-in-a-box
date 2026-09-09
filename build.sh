@@ -18,7 +18,7 @@ if podman container exists "$CONTAINER_NAME"; then
     should_exit=1
 fi
 
-if [[ "$should_exit" ]]; then
+if [[ -n "${should_exit:-}" ]]; then
     # Something is wrong
     exit 1
 fi
