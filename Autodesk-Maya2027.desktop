@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Autodesk Maya 2027
+Exec=/usr/local/bin/maya-run
+Type=Application
+Categories=Application;Graphics;
+Icon=/usr/autodesk/maya/desktop/Maya.png

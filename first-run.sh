@@ -13,17 +13,9 @@ echo "[*] Setting up licensing"
 
 ###############################################################################
 
-echo "[*] Creating identity manager desktop file"
+echo "[*] Copying identity manager desktop file"
 mkdir -p ~/.local/share/applications
-
-cat << EOF > ~/.local/share/applications/com.autodesk.AdskIdentityManager.desktop
-[Desktop Entry]
-Name=Autodesk Identity Manager
-Exec=/opt/Autodesk/AdskIdentityManager/Current/AdskIdentityManager %u
-Type=Application
-MimeType=x-scheme-handler/adskidmgr;x-scheme-handler/adsk.idmgr;
-NoDisplay=true
-EOF
+cp /opt/maya-install/com.autodesk.AdskIdentityManager.desktop ~/.local/share/applications/
 
 ###############################################################################
 

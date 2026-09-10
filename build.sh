@@ -60,8 +60,21 @@ else
     distrobox enter "$CONTAINER_NAME" -- distrobox-export --bin /usr/local/bin/maya-run
 fi
 
+DESKTOP_FILE_NAME="Autodesk-Maya2027.desktop"
+
+if [[ -n "${SKIP_EXPORTS:-}" ]]; then
+    echo "[!] SKIP_EXPORTS is set; not exporting modified .desktop file" >&2
+elif [[ -f "$HOME/.local/share/applications/$CONTAINER_NAME-$DESKTOP_FILE_NAME" ]]; then
+    echo "[!] .desktop file already exists; not re-exporting" >&2
+else
+    echo "[*] Exporting modified Maya .desktop file"
+    echo
+    distrobox enter "$CONTAINER_NAME" -- distrobox-export --app "$DESKTOP_FILE_NAME"
+    echo
+fi
+
 echo "---"
-echo "[*] Build and setup complete, start Maya with 'maya-run'"
+echo "[*] Build and setup complete, start Maya with 'maya-run' or via your desktop application launcher"
 echo "[*] Inside the container, if '~/.local/bin' is placed earlier in your \$PATH"
 echo "    than '/usr/local/bin' is, the exported host-system 'maya-run' will take priority."
 echo "    Invoke the full path '/usr/local/bin/maya-run' to bypass the exported wrapper."
