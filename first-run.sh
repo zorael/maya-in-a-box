@@ -5,6 +5,7 @@ DEFAULT_WEB_BROWSER_DESKTOP="brave-browser.desktop"
 
 ###############################################################################
 
+echo
 echo "[*] Setting up licensing"
 /opt/maya-install/setup-licensing.sh
 

@@ -47,7 +47,7 @@ distrobox create \
     "${HOME_ARGS[@]}" \
     --init
 
-# There is already a trailing empty space output from the previous command
+# There is already a trailing empty line output from the previous command
 #echo
 echo "[*] distrobox finalise and first run"
 distrobox enter "$CONTAINER_NAME" -- /opt/maya-install/first-run.sh
