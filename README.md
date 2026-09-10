@@ -1,6 +1,6 @@
 # Maya in a box
 
-Creates a distrobox container for [**Maya 2027**](https://www.autodesk.com/products/maya/overview) based on [**Rocky Linux 9**](https://rockylinux.org), which is [**the only\* officially supported distribution**](https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-Requirements-for-Autodesk-Maya-2027.html) for it (alongside [**Red Hat Enterprise Linux**](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)).
+Creates a distrobox container for [**Maya 2027**](https://www.autodesk.com/products/maya/overview) based on [**Rocky Linux 9**](https://rockylinux.org), which is the [only\*](https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-Requirements-for-Autodesk-Maya-2027.html) officially supported distribution for it (alongside [**Red Hat Enterprise Linux**](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)).
 
 Plugins that are included in the main Maya download are installed automatically:
 
@@ -10,7 +10,7 @@ Plugins that are included in the main Maya download are installed automatically:
 - **FlowRetopology**
 - **LookdevX**
 
-Exceptions being **Flow** and **MayaFlow** that require a hosted Flow server. The [**Arnold renderer**](#arnold-renderer) must additionally be installed separately.
+Exceptions being **Flow** and **MayaFlow** that require a hosted Flow server. The [**Arnold Renderer**](#arnold-renderer) must additionally be installed separately.
 
 Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**EndeavourOS**](https://endeavouros.com) running Wayland sessions (via Xwayland). It should work even better under X11.
 
@@ -23,7 +23,7 @@ Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**Endeavou
   - [Build the container](#build-the-container)
   - [Create a distrobox of the image](#create-a-distrobox-of-the-image)
   - [First-time setup](#first-time-setup)
-  - [Expose `maya-run`](#expose-maya-run)
+  - [Expose Maya to the host system](#expose-maya-to-the-host-system)
   - [Start Maya](#start-maya)
 - [Uninstallation](#uninstallation)
 - [Troubleshooting](#troubleshooting)
@@ -94,8 +94,8 @@ Included in the repository is a [`build.sh`](build.sh) script that **automates t
 ```bash
 podman build \
     --security-opt label=disable \
-    -v ~/maya-src:/mnt/maya-src:ro \
-    -t localhost/maya-rocky9 \
+    --volume ~/maya-src:/mnt/maya-src:ro \
+    --tag localhost/maya-rocky9 \
     "path/to/repo/clone"
 ```
 
@@ -115,9 +115,9 @@ distrobox create \
 
 `--name` specifies the label of the container, which will be used as identifier when using the `distrobox` command-line tool (`distrobox enter maya`, etc). So don't name it "blerp".
 
-`--init` is required to allow for **systemd** to manage the licensing daemon.
-
 `--home` makes the user inside the distrobox have a different `$HOME`, separate from that of your host user. It is optional but recommended.
+
+`--init` is required to allow for **systemd** to manage the licensing daemon.
 
 ### First-time setup
 
@@ -125,12 +125,12 @@ distrobox create \
 distrobox enter maya -- /opt/maya-install/first-run.sh
 ```
 
-### Expose [`maya-run`](maya-run)
+### Expose Maya to the host system
 
-Export the [`maya-run`](maya-run) start-up script to be available to the host system.
+Export the [`maya-run`](maya-run) start-up script and the Maya application `.desktop` file to be available to the host system:
 
 ```bash
-distrobox enter maya -- distrobox-export --bin /usr/local/bin/maya-run
+distrobox enter maya -- /opt/maya-install/setup-exports.sh
 ```
 
 ### Start Maya
@@ -139,7 +139,7 @@ distrobox enter maya -- distrobox-export --bin /usr/local/bin/maya-run
 maya-run
 ```
 
-Run it in a terminal the first time to catch any potential error messages.
+Run it in a terminal the first time to catch any potential error messages, but it should otherwise also be available in your desktop application launcher as "**Autodesk Maya 2027**".
 
 ## Uninstallation
 
@@ -168,12 +168,13 @@ Once installed, stop the container with `distrobox stop maya` and then re-enter 
 Alternatively, a way that doesn't require restarting the container:
 
 ```bash
-sh /run/host/home/$(id -un)/.distroboxrc
+source ~/.distroboxrc                     # if on the host
+sh /run/host/home/$(id -un)/.distroboxrc  # if inside the container
 ```
 
 ### Program starts but never opens a browser
 
-Sometimes with 30-second long delays between steps, as if something is timing out.
+Often with 30-second long delays between steps, as if something is timing out.
 
 Verify that you aren't running more than one Maya distrobox simultaneously; each distrobox runs its own licensing daemon, and multiple instances can seemingly collide. `distrobox stop` other running distroboxes before starting a new one.
 
