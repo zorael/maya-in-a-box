@@ -52,8 +52,12 @@ distrobox create \
 echo "[*] distrobox finalise and first run"
 distrobox enter "$CONTAINER_NAME" -- /opt/maya-install/first-run.sh
 
-if [[ -f "$HOME/.local/bin/maya-run" ]]; then
-    echo "[!] 'maya-run' wrapper script already exists at '~/.local/bin/maya-run'; not re-exporting" >&2
+MAYA_RUN_PATH="$HOME/.local/bin/maya-run"
+
+if [[ -n "${SKIP_EXPORTS:-}" ]]; then
+    echo "[!] SKIP_EXPORTS is set; not exporting 'maya-run' wrapper script" >&2
+elif [[ -f "$MAYA_RUN_PATH" ]]; then
+    echo "[!] 'maya-run' wrapper script already exists at '$MAYA_RUN_PATH'; not re-exporting" >&2
 else
     echo "[*] Exporting Maya run script"
     mkdir -p ~/.local/bin
