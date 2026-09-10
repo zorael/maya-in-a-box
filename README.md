@@ -1,6 +1,6 @@
-# Maya 2027 in a box
+# Maya in a box
 
-Creates a distrobox container for [**Maya 2027**](https://www.autodesk.com/products/maya/overview) based on [**Rocky Linux 9**](https://rockylinux.org), which is [the only\* officially supported distribution](https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-Requirements-for-Autodesk-Maya-2027.html) for it (alongside [**Red Hat Enterprise Linux**](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)).
+Creates a distrobox container for [**Maya 2027**](https://www.autodesk.com/products/maya/overview) based on [**Rocky Linux 9**](https://rockylinux.org), which is [**the only\* officially supported distribution**](https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-Requirements-for-Autodesk-Maya-2027.html) for it (alongside [**Red Hat Enterprise Linux**](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)).
 
 Plugins that are included in the main Maya download are installed automatically:
 
@@ -87,18 +87,16 @@ xset fp rehash 2>/dev/null || true
 
 ### Automation script
 
-Included in the repository is a [`build.sh`](build.sh) script that **automates the following setup**. If it doesn't work, then just follow the instructions manually as outlined below. If you figure out what went wrong, [please file a GitHub issue](https://github.com/zorael/maya-in-a-box/issues/new).
+Included in the repository is a [`build.sh`](build.sh) script that **automates the setup that follows**. If something doesn't work, then just follow the instructions manually as outlined below. If you figure out what went wrong, [**please file a GitHub issue**](https://github.com/zorael/maya-in-a-box/issues/new).
 
 ### Build the container
-
-Run the following, replacing `$REPO_DIR` with the path to your clone of this repository:
 
 ```bash
 podman build \
     --security-opt label=disable \
     -v ~/maya-src:/mnt/maya-src:ro \
     -t localhost/maya-rocky9 \
-    "$REPO_DIR"
+    "path/to/repo/clone"
 ```
 
 The `--security-opt label=disable` option is necessary to avoid SELinux issues when creating the image.
@@ -115,7 +113,11 @@ distrobox create \
     --init
 ```
 
-The `--init` is required to allow for **systemd** to manage the licensing daemon.
+`--name` specifies the label of the container, which will be used as identifier when using the `distrobox` command-line tool (`distrobox enter maya`, etc). So don't name it "blerp".
+
+`--init` is required to allow for **systemd** to manage the licensing daemon.
+
+`--home` makes the user inside the distrobox have a different `$HOME`, separate from that of your host user. It is optional but recommended.
 
 ### First-time setup
 
@@ -163,6 +165,12 @@ It may not be installed on Wayland-based desktop environments by default. Refer 
 
 Once installed, stop the container with `distrobox stop maya` and then re-enter it with `distrobox enter maya` to see if that solved the problem.
 
+Alternatively, a way that doesn't require restarting the container:
+
+```bash
+sh /run/host/home/$(id -un)/.distroboxrc
+```
+
 ### Program starts but never opens a browser
 
 Sometimes with 30-second long delays between steps, as if something is timing out.
@@ -193,7 +201,7 @@ If the Application Home screen is empty, add `--single-process` to the Maya comm
 
 ### Font errors
 
-If the program starts but you get error messages in the bottom right about fonts failing to load, then fonts from the distrobox may not have been correctly [copied to (and imported on) the host system](#distroboxrc).
+If the program starts but you get error messages in the bottom right about fonts failing to load, then fonts from the distrobox may not have been correctly [**copied to (and imported on) the host system**](#distroboxrc).
 
 ```text
 Failed trying to load font : -*-helvetica-bold-r-normal-*-11-*-*-*-*-*-iso8859-1 //
@@ -212,13 +220,13 @@ This happens (at least) on Wayland but does not seem to be fatal to the Maya sta
 
 ### Some features just don't work
 
-It's impossible to know whether all the dependencies were identified and installed. Some features may not work as expected (or at all) if one or more libraries are missing. The place to start is to use `ldd` on any Maya or plugin binaries that seem relevant.
+It's impossible to know whether all the dependencies were identified and installed. Some features may not work as expected (or at all) if one or more libraries are missing. The place to start is to use `ldd` on any Maya or plugin binaries that seem relevant. If you figure out what is missing, [**please file a GitHub issue**](https://github.com/zorael/maya-in-a-box/issues/new).
 
 ## Supplementary notes
 
 ### [`.distroboxrc`](distroboxrc)
 
-The purpose of this file is to [add font paths on the host system](#font-errors), "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet and you get a sequencing problem.
+The purpose of this file is to [**add font paths on the host system**](#font-errors), "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet and you get a sequencing problem.
 
 To work around this, immediately after having copied the fonts, [`first-run.sh`](first-run.sh) *executes* [`.distroboxrc`](distroboxrc) using `sh` on the host system. This means that if your file contains anything extra, that extra something has to be safe to be run more than once. It also means that the file should try to keep to `sh` syntax and avoid features specific to other shells, like `bash`.
 
