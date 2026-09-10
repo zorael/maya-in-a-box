@@ -107,6 +107,8 @@ COPY --chmod=0755 first-run.sh /opt/maya-install/
 
 COPY --chmod=0755 setup-licensing.sh /opt/maya-install/
 
+COPY --chmod=0755 setup-exports.sh /opt/maya-install/
+
 COPY --chmod=0644 Autodesk-Maya2027.desktop /usr/local/share/applications/
 
 COPY --chmod=0644 com.autodesk.AdskIdentityManager.desktop /opt/maya-install/
