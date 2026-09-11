@@ -1,10 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-DEFAULT_WEB_BROWSER_DESKTOP="brave-browser.desktop"
-
-###############################################################################
-
 echo
 echo "[*] Setting up licensing"
 /opt/maya-install/setup-licensing.sh
@@ -24,6 +20,8 @@ echo "[*] Updating desktop database"
 update-desktop-database ~/.local/share/applications
 
 ###############################################################################
+
+DEFAULT_WEB_BROWSER_DESKTOP="brave-browser.desktop"
 
 echo "[*] Setting default web browser"
 mkdir -p ~/.config
