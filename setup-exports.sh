@@ -1,6 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+if [[ -z ${CONTAINER_ID:-} ]]; then
+    echo "[x] CONTAINER_ID is not set. Are we even inside a distrobox?" >&2
+    exit 1
+fi
+
+###############################################################################
+
 HOST_HOME="/run/host/home/$(id -un)"
 
 if [[ ! -d "$HOST_HOME" ]]; then

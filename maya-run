@@ -1,11 +1,15 @@
 #!/bin/bash
 set -uo pipefail
 
-# If the Application Home screen is blank: https://aur.archlinux.org/packages/maya?O=80#comment-871405
-# Just add --single-process to the Maya command line to work around the issue.
+if [[ -z ${CONTAINER_ID:-} ]]; then
+    echo "[x] CONTAINER_ID is not set. Are we even inside a distrobox?" >&2
+    exit 1
+fi
+
+###############################################################################
 
 DEFAULT_WEB_BROWSER="/usr/bin/brave-browser"
-LICENSE_HELPER=/opt/Autodesk/AdskLicensing/Current/helper/AdskLicensingInstHelper
+LICENSE_HELPER="/opt/Autodesk/AdskLicensing/Current/helper/AdskLicensingInstHelper"
 
 if ! "$LICENSE_HELPER" list 2>/dev/null | grep -q '"sel_prod_key"'; then
     echo "[x] Maya is not registered, did you run '/opt/maya-install/first-run.sh'?" >&2
@@ -25,6 +29,9 @@ if ! "$LICENSE_HELPER" list 2>/dev/null | grep -q '"sel_prod_key"'; then
 fi
 
 ###############################################################################
+
+# If the Application Home screen is blank: https://aur.archlinux.org/packages/maya?O=80#comment-871405
+# Just add --single-process to the Maya command line to work around the issue.
 
 export QT_QPA_PLATFORM="xcb"
 export GDK_BACKEND="x11"

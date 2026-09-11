@@ -1,6 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+if [[ -z ${CONTAINER_ID:-} ]]; then
+    echo "[x] CONTAINER_ID is not set. Are we even inside a distrobox?" >&2
+    exit 1
+fi
+
+###############################################################################
+
 echo
 echo "[*] Setting up licensing"
 /opt/maya-install/setup-licensing.sh
@@ -30,17 +37,19 @@ xdg-mime default "$DEFAULT_WEB_BROWSER_DESKTOP" x-scheme-handler/http x-scheme-h
 
 ###############################################################################
 
-echo "[*] Copying fonts to host"
-
 HOST_HOME="/run/host/home/$(id -un)"
 
 if [[ ! -d "$HOST_HOME" ]]; then
     echo "[!] Failed to resolve host home path" >&2
-    exit 1  # also skips .distroboxrc steps below; they require $HOST_HOME
+    exit 1  # also skips the .distroboxrc step below; it requires $HOST_HOME
 fi
+
+###############################################################################
 
 FONT_DIR="$HOST_HOME/.local/share/x11-fonts"
 mkdir -p "$FONT_DIR"
+
+echo "[*] Copying fonts to host"
 
 for subdir in 100dpi 75dpi; do
     dir="/usr/share/X11/fonts/$subdir"

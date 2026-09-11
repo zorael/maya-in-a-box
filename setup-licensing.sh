@@ -1,7 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-LICENSE_HELPER=/opt/Autodesk/AdskLicensing/Current/helper/AdskLicensingInstHelper
+if [[ -z ${CONTAINER_ID:-} ]]; then
+    echo "[x] CONTAINER_ID is not set. Are we even inside a distrobox?" >&2
+    exit 1
+fi
+
+###############################################################################
+
+LICENSE_HELPER="/opt/Autodesk/AdskLicensing/Current/helper/AdskLicensingInstHelper"
 
 echo "[*] Registering Maya"
 
