@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 HOST_HOME="/run/host/home/$(id -un)"
 

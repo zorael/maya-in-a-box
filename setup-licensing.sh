@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 LICENSE_HELPER=/opt/Autodesk/AdskLicensing/Current/helper/AdskLicensingInstHelper
 
@@ -8,13 +9,12 @@ sudo "$LICENSE_HELPER" register \
     -pk 657S1 \
     -pv 2027.0.0.F \
     -el EN_US \
-    -cf /opt/maya-install/MayaConfig.pit
+    -cf /opt/maya-install/MayaConfig.pit || true
 
-"$LICENSE_HELPER" list | grep -q '"sel_prod_key"'
-retval=$?
-
-if [[ $retval -ne 0 ]]; then
-    echo "[!] Maya registration failed" >&2
+if "$LICENSE_HELPER" list | grep -q '"sel_prod_key"'; then
+    echo "[*] Maya registration successful"
+    exit 0
+else
+    echo "[x] Maya registration failed" >&2
+    exit 1
 fi
-
-exit $retval
