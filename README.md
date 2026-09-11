@@ -37,7 +37,7 @@ Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**Endeavou
 - [Supplementary notes](#supplementary-notes)
   - [`.distroboxrc`](#distroboxrc)
   - [`$HOME`](#home)
-  - [Arnold renderer](#arnold-renderer)
+  - [Arnold Renderer](#arnold-renderer)
 - [AI](#ai)
 - [License and Copyright](#license-and-copyright)
 
@@ -67,7 +67,7 @@ The downloaded tarball (full name like `Autodesk_Maya_2027_2_Update_Linux_64bit.
 └── upi_list.json
 ```
 
-You must also install [`distrobox`](https://github.com/89luca89/distrobox) and [`podman`](https://podman.io). Refer to your repositories.
+You must also install [**distrobox**](https://github.com/89luca89/distrobox) and [**podman**](https://podman.io). Refer to your repositories.
 
 ### Prepare [`.distroboxrc`](distroboxrc)
 
@@ -163,9 +163,7 @@ Can't open display: :0
 
 It may not be installed on Wayland-based desktop environments by default. Refer to your repositories; the package is commonly called `xhost`, `xorg-xhost` or `x11-xserver-utils`.
 
-Once installed, stop the container with `distrobox stop maya` and then re-enter it with `distrobox enter maya` to see if that solved the problem.
-
-Alternatively, a way that doesn't require restarting the container:
+Once installed, source or execute the `~/.distroboxrc` file to apply the changes:
 
 ```bash
 source ~/.distroboxrc                     # if on the host
@@ -180,7 +178,7 @@ Verify that you aren't running more than one Maya distrobox simultaneously; each
 
 ### Browser login works but the "open product" button doesn't
 
-When you click "open product" in the browser, the server returns an `adskidmgr://` *callback URL* that is meant to be passed on to and handled by the Autodesk licensing manager. If it isn't configured correctly and it doesn't resolve the URL scheme as something to be handled by the licensing manager, it may either silently do nothing, or it may pop up a list of applications to choose between; neither of which is what you wanted.
+When you click "open product" in the browser after having successfully logged in, the server returns an `adskidmgr://` *callback URL* that is meant to be passed on to and handled by the Autodesk licensing manager. If it isn't configured correctly and it doesn't resolve the URL scheme as something to be handled by the licensing manager, it may either silently do nothing, or it may pop up a list of applications to choose between; neither of which is what you wanted.
 
 If it's seemingly doing nothing, first verify that it isn't actually working; it may be that the license was established and Maya is just taking a long time to start up in the background. Refer to the progress bar in the Maya splash window.
 
@@ -208,16 +206,15 @@ If the program starts but you get error messages in the bottom right about fonts
 Failed trying to load font : -*-helvetica-bold-r-normal-*-11-*-*-*-*-*-iso8859-1 //
 ```
 
-These fonts are copied from the container to the host system as part of the [`first-run.sh`](first-run.sh) script that should be run once after distrobox creation. It then invokes [`.distroboxrc`](distroboxrc) on the host system, so the font paths *should* be available right away. If you still see errors, verify that [`~/.distroboxrc`](distroboxrc) is in place and has the expected contents; if not, fix it, then stop the distrobox and re-enter.
+These fonts are copied from the container to the host system as part of the [`first-run.sh`](first-run.sh) script that should be run once after distrobox creation. It then invokes [`.distroboxrc`](distroboxrc) on the host system, so the font paths *should* be available right away. If you still see errors, verify that [`~/.distroboxrc`](distroboxrc) is in place and has the expected contents; if not, fix it, then source the file on the host system to execute its contents.
 
 ```bash
-distrobox stop maya
-distrobox enter maya
+source ~/.distroboxrc
 ```
 
 ### "`WebKitWebProcess` has encountered a fatal error and was closed"
 
-This happens (at least) on Wayland but does not seem to be fatal to the Maya start-up/login process. It just happens; ignore it.
+This happens (at least) on Wayland but does not seem to be fatal to the Maya start-up/login process. It's just noise; ignore it.
 
 ### Some features just don't work
 
@@ -227,7 +224,7 @@ It's impossible to know whether all the dependencies were identified and install
 
 ### [`.distroboxrc`](distroboxrc)
 
-The purpose of this file is to [**add font paths on the host system**](#font-errors), "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet and you get a sequencing problem.
+The purpose of this file is to [**add X11 font paths on the host system**](#font-errors), "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet and you get a sequencing problem.
 
 To work around this, immediately after having copied the fonts, [`first-run.sh`](first-run.sh) *executes* [`.distroboxrc`](distroboxrc) using `sh` on the host system. This means that if your file contains anything extra, that extra something has to be safe to be run more than once. It also means that the file should try to keep to `sh` syntax and avoid features specific to other shells, like `bash`.
 
@@ -237,9 +234,9 @@ The `distrobox create` command given in the instructions of this `README.md` (an
 
 If you can't find your files, look to `~/.distrobox/maya` on the host system. (Replace `maya` with the name of your Maya distrobox, if different.)
 
-### Arnold renderer
+### Arnold Renderer
 
-The [**Arnold renderer**](https://www.autodesk.com/products/arnold/overview) is not included in the Maya 2027 tarball and so must be manually downloaded and installed, if desired. It requires accepting a separate license agreement by keyboard input, and thus cannot be pre-installed into the container image. It is available as (something like) `MtoA-5.x.y.z-linux-2027.run` on [**the Autodesk Maya page**](https://manage.autodesk.com/products/MAYA?version=2027&platform=LNUX64) after selecting to list **Extensions**. Merely download the file, set it executable `+x` and run it inside the distrobox with `sudo` permissions. Take care to download the latest version.
+The [**Arnold Renderer**](https://www.autodesk.com/products/arnold/overview) is not included in the Maya 2027 tarball and so must be manually downloaded and installed, if desired. It requires accepting a separate license agreement by keyboard input, and thus cannot be pre-installed into the container image. It is available as (something like) `MtoA-5.x.y.z-linux-2027.run` on [**the Autodesk Maya page**](https://manage.autodesk.com/products/MAYA?version=2027&platform=LNUX64) after selecting to list **Extensions**. Merely download the file, set it executable `+x` and run it inside the distrobox with `sudo` permissions. Take care to download the latest version.
 
 ## AI
 
