@@ -15,6 +15,7 @@ RUN dnf install -y epel-release \
 # Runtime dependencies for Maya, its ancillaries and its plugins.
 # Maya's RPMs declare almost nothing, so this list was generated manually
 # by parsing ldd output, plus some heavy trial and error.
+# Some were additionally added because they seemed they *might* get dlopened.
 RUN dnf install -y \
         audiofile \
         glx-utils \
@@ -24,6 +25,7 @@ RUN dnf install -y \
         libXpm \
         libgs \
         libicu \
+        libmng \
         libpng12 \
         libtiff \
         libva \
@@ -32,6 +34,7 @@ RUN dnf install -y \
         libxkbcommon-x11 \
         libxkbfile \
         ocl-icd \
+        pciutils-libs \
         webkit2gtk3 \
         xorg-x11-fonts-100dpi \
         xorg-x11-fonts-75dpi \
