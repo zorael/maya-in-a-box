@@ -1,4 +1,5 @@
 #!/bin/bash
+set -uo pipefail
 
 # If the Application Home screen is blank: https://aur.archlinux.org/packages/maya?O=80#comment-871405
 # Just add --single-process to the Maya command line to work around the issue.
@@ -25,9 +26,9 @@ fi
 
 ###############################################################################
 
-export QT_QPA_PLATFORM=xcb
-export GDK_BACKEND=x11
-export XDG_SESSION_TYPE=x11
+export QT_QPA_PLATFORM="xcb"
+export GDK_BACKEND="x11"
+export XDG_SESSION_TYPE="x11"
 export MAYA_DISABLE_ADP=1
 export MAYA_DISABLE_CIP=1
 export MAYA_DISABLE_CER=1
@@ -36,6 +37,7 @@ export DISPLAY="${DISPLAY:-:0}"
 unset WAYLAND_DISPLAY
 unset DESKTOP_SESSION
 unset XDG_CURRENT_DESKTOP
+unset XDG_SESSION_DESKTOP
 unset KDE_FULL_SESSION
 
 exec /usr/autodesk/maya2027/bin/maya2027 "$@"
