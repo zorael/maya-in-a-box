@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Example custom command:
-# MAYA_SRC=~/maya-extracted CONTAINER_NAME="maya-test" SKIP_SEPARATE_HOME=1 \
+# MAYA_SRC=~/maya-extracted CONTAINER_NAME="maya-test" SKIP_SEPARATE_HOME=1 DISABLE_NVIDIA=1 \
 #   ./build.sh --no-cache path/to/dir/with/Containerfile
 
 MAYA_SRC="${MAYA_SRC:-$HOME/maya-src}"
@@ -44,7 +44,14 @@ podman build \
 
 # Allow for disabling a separate home for the distrobox by setting SKIP_SEPARATE_HOME
 HOME_ARGS=()
-[[ -n "${SKIP_SEPARATE_HOME:-}" ]] || HOME_ARGS=( --home "$HOME/.distrobox/$CONTAINER_NAME" )
+[[ -n ${SKIP_SEPARATE_HOME:-} ]] || HOME_ARGS=( --home "$HOME/.distrobox/$CONTAINER_NAME" )
+
+# Nvidia support requires an --nvidia flag. Try to autodetect if we even want it
+# and allow for override-disable with DISABLE_NVIDIA
+NVIDIA_ARGS=()
+if [[ -z ${DISABLE_NVIDIA:-} ]] && [[ -e /dev/nvidiactl || -d /proc/driver/nvidia ]]; then
+    NVIDIA_ARGS=( --nvidia )
+fi
 
 echo
 echo "[*] distrobox create"
@@ -53,6 +60,7 @@ distrobox create \
     --name "$CONTAINER_NAME" \
     --image "$CONTAINER_IMAGE" \
     "${HOME_ARGS[@]}" \
+    "${NVIDIA_ARGS[@]}" \
     --init
 
 ###############################################################################
