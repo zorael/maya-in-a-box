@@ -21,7 +21,7 @@ if podman container exists "$CONTAINER_NAME"; then
     should_exit=1
 fi
 
-if [[ -n "${should_exit:-}" ]]; then
+if [[ -n ${should_exit:-} ]]; then
     # Something is wrong
     exit 1
 fi
@@ -65,7 +65,7 @@ distrobox enter "$CONTAINER_NAME" -- /opt/maya-install/first-run.sh
 
 ###############################################################################
 
-if [[ -n "${SKIP_EXPORTS:-}" ]]; then
+if [[ -n ${SKIP_EXPORTS:-} ]]; then
     echo "[!] SKIP_EXPORTS is set; not exporting 'maya-run' wrapper script and .desktop file" >&2
     echo
 else
@@ -75,7 +75,7 @@ fi
 
 ###############################################################################
 
-if [[ -n "${SKIP_EXPORTS:-}" ]]; then
+if [[ -n ${SKIP_EXPORTS:-} ]]; then
     echo "Build and setup complete. Start Maya with 'distrobox enter $CONTAINER_NAME -- maya-run'"
 else
     echo "Build and setup complete. Start Maya with 'maya-run' or via your desktop application launcher."
