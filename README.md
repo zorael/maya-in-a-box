@@ -110,7 +110,8 @@ distrobox create \
     --name maya \
     --image localhost/maya-rocky9 \
     --home ~/.distrobox/maya \
-    --init
+    --init \
+    --nvidia
 ```
 
 `--name` specifies the label of the container, which will be used as identifier when using the `distrobox` command-line tool (`distrobox enter maya`, etc). So don't name it "blerp".
@@ -118,6 +119,12 @@ distrobox create \
 `--home` makes the user inside the distrobox have a different `$HOME`, separate from that of your host user. It is optional but recommended.
 
 `--init` is required to allow for **systemd** to manage the licensing daemon.
+
+`--nvidia` enables **Nvidia** integration. Only applicable if you have an Nvidia GPU and you are using the proprietary drivers.
+
+> [*"Be aware that this is not compatible with non-glibc systems and needs somewhat newer distributions to work."*](https://github.com/89luca89/distrobox/blob/main/docs/usage/distrobox-create.md#nvidia-integration)
+
+Also see the section [**Using the GPU inside the container**](https://github.com/89luca89/distrobox/blob/main/docs/useful_tips.md#using-the-gpu-inside-the-container) of the [**Useful tips**](https://github.com/89luca89/distrobox/blob/main/docs/useful_tips.md) page of the distrobox documentation.
 
 ### First-time setup
 
