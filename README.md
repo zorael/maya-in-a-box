@@ -49,7 +49,7 @@ The generated container will contain software that may not be redistributed free
 
 ## Instructions
 
-Maya is licensed software and must be manually obtained from [**the Autodesk Maya page**](https://manage.autodesk.com/products/MAYA?version=2027&platform=LNUX64).
+Maya is licensed software and must be manually obtained from [**the Autodesk Maya product page**](https://manage.autodesk.com/products/MAYA?version=2027&platform=LNUX64).
 
 The downloaded tarball (full name like `Autodesk_Maya_2027_2_Update_Linux_64bit.tgz`) should be extracted to `~/maya-src/`, creating a directory structure like the following:
 
@@ -87,7 +87,7 @@ xset fp rehash 2>/dev/null || true
 
 ### Automation script
 
-Included in the repository is a [`build.sh`](build.sh) script that **automates the setup that follows**. If something doesn't work, then just follow the instructions manually as outlined below. If you figure out what went wrong, [**please file a GitHub issue**](https://github.com/zorael/maya-in-a-box/issues/new).
+Included in the repository is a [`build.sh`](build.sh) script that **automates the setup that follows**. If something doesn't work, then just follow the instructions manually as outlined below. If you figure out what went wrong, [please file a GitHub issue](https://github.com/zorael/maya-in-a-box/issues/new).
 
 ### Build the container
 
@@ -196,11 +196,11 @@ Be sure to put the callback URL within quotes.
 
 ### Application Home screen is blank
 
-If the Application Home screen is empty, add `--single-process` to the Maya command line (in [`maya-run`](maya-run)) to work around the issue. See [**this comment by meepzh**](https://aur.archlinux.org/packages/maya?O=80#comment-871405) on the [**Arch User Repository page for the `maya` package**](https://aur.archlinux.org/packages/maya) for more information.
+If the Application Home screen is empty, add `--single-process` to the Maya command line (in [`maya-run`](maya-run)) to work around the issue. See [this comment by meepzh](https://aur.archlinux.org/packages/maya?O=80#comment-871405) on the [**Arch User Repository page for the `maya` package**](https://aur.archlinux.org/packages/maya) for more information.
 
 ### Font errors
 
-If the program starts but you get error messages in the bottom right about fonts failing to load, then fonts from the distrobox may not have been correctly [**copied to (and imported on) the host system**](#distroboxrc).
+If the program starts but you get error messages in the bottom right about fonts failing to load, then fonts from the distrobox may not have been correctly [copied to (and imported on) the host system](#distroboxrc).
 
 ```text
 Failed trying to load font : -*-helvetica-bold-r-normal-*-11-*-*-*-*-*-iso8859-1 //
@@ -218,13 +218,13 @@ This happens (at least) on Wayland but does not seem to be fatal to the Maya sta
 
 ### Some features just don't work
 
-It's impossible to know whether all the dependencies were identified and installed. Some features may not work as expected (or at all) if one or more libraries are missing. The place to start is to use `ldd` on any Maya or plugin binaries that seem relevant. If you figure out what is missing, [**please file a GitHub issue**](https://github.com/zorael/maya-in-a-box/issues/new).
+It's impossible to know whether all the dependencies were identified and installed. Some features may not work as expected (or at all) if one or more libraries are missing. The place to start is to use `ldd` on any Maya or plugin binaries that seem relevant. If you figure out what is missing, [please file a GitHub issue](https://github.com/zorael/maya-in-a-box/issues/new).
 
 ## Supplementary notes
 
 ### [`.distroboxrc`](distroboxrc)
 
-The purpose of this file is to [**add X11 font paths on the host system**](#font-errors), "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet and you get a sequencing problem.
+The purpose of this file is to [add X11 font paths on the host system](#font-errors), "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet and you get a sequencing problem.
 
 To work around this, immediately after having copied the fonts, [`first-run.sh`](first-run.sh) *executes* [`.distroboxrc`](distroboxrc) using `sh` on the host system. This means that if your file contains anything extra, that extra something has to be safe to be run more than once. It also means that the file should try to keep to `sh` syntax and avoid features specific to other shells, like `bash`.
 
@@ -236,7 +236,7 @@ If you can't find your files, look to `~/.distrobox/maya` on the host system. (R
 
 ### Arnold Renderer
 
-The [**Arnold Renderer**](https://www.autodesk.com/products/arnold/overview) is not included in the Maya 2027 tarball and so must be manually downloaded and installed, if desired. It requires accepting a separate license agreement by keyboard input, and thus cannot be pre-installed into the container image. It is available as (something like) `MtoA-5.x.y.z-linux-2027.run` on [**the Autodesk Maya page**](https://manage.autodesk.com/products/MAYA?version=2027&platform=LNUX64) after selecting to list **Extensions**. Merely download the file, set it executable `+x` and run it inside the distrobox with `sudo` permissions. Take care to download the latest version.
+The [**Arnold Renderer**](https://www.autodesk.com/products/arnold/overview) is not included in the Maya 2027 tarball and so must be manually downloaded and installed, if desired. It requires accepting a separate license agreement by keyboard input, and thus cannot be pre-installed into the container image. It is available as (something like) `MtoA-5.x.y.z-linux-2027.run` on [**the Autodesk Maya product page**](https://manage.autodesk.com/products/MAYA?version=2027&platform=LNUX64) after selecting to list **Extensions**. Merely download the file, set it executable `+x` and run it inside the distrobox with `sudo` permissions. Take care to download the latest version.
 
 ## AI
 
