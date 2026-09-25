@@ -11,3 +11,5 @@ for subdir in 100dpi 75dpi; do
 done
 
 xset fp rehash 2>/dev/null || true
+
+unset subdir dir
