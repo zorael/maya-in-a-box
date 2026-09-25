@@ -1,14 +1,12 @@
 # Place as ~/.distroboxrc on the host system.
-#
-# bashisms *might* break this depending on the shell used.
-# first-run.sh calls this script from inside the distrobox (on the host system)
-# with sh, so be conservative and use (eg.) [ and ] instead of [[ and ]].
+# This is sourced as you enter the distrobox. Additionally first-run.sh calls
+# this as a script from inside the container (invoking it on the host system).
 
-xhost +si:localuser:"$USER" >/dev/null 2>&1 || true
+xhost +si:localuser:"$USER" &>/dev/null || true
 
 for subdir in 100dpi 75dpi; do
     dir="$HOME/.local/share/x11-fonts/$subdir"
-    [ -d "$dir" ] || continue
+    [[ -d "$dir" ]] || continue
     xset +fp "$dir" 2>/dev/null || true
 done
 

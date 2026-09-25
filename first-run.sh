@@ -68,5 +68,5 @@ done
 
 if [[ -f "$HOST_HOME/.distroboxrc" ]]; then
     echo "[*] Invoking '.distroboxrc' on host to pick up fonts"
-    distrobox-host-exec sh "$HOST_HOME/.distroboxrc"
+    distrobox-host-exec bash "$HOST_HOME/.distroboxrc"
 fi
