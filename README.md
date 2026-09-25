@@ -1,6 +1,8 @@
 # Maya in a box
 
-Creates a distrobox container for [**Maya 2027**](https://www.autodesk.com/products/maya/overview) based on [**Rocky Linux 9**](https://rockylinux.org), which is the [only\*](https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-Requirements-for-Autodesk-Maya-2027.html) officially supported distribution for it (alongside [**Red Hat Enterprise Linux**](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)).
+Run [**Autodesk Maya 2027**](https://www.autodesk.com/products/maya/overview) in any distro.
+
+Creates a [**distrobox**](https://distrobox.it) container based on [**Rocky Linux 9**](https://rockylinux.org), which is the [only\*](https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-Requirements-for-Autodesk-Maya-2027.html) distribution Autodesk supports (alongside [**Red Hat Enterprise Linux**](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux)), then installs Maya inside it using its official packaging.
 
 Plugins that are included in the main Maya download are installed automatically:
 
@@ -12,7 +14,7 @@ Plugins that are included in the main Maya download are installed automatically:
 
 Exceptions being **Flow** and **MayaFlow** that require a hosted Flow server. The [**Arnold Renderer**](#arnold-renderer) must additionally be installed separately.
 
-Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**EndeavourOS**](https://endeavouros.com) running Wayland sessions (via Xwayland). It should work even better under X11.
+Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**EndeavourOS**](https://endeavouros.com) running Wayland sessions (via Xwayland). X11 is untested but it should work even better under it than Wayland.
 
 ## TOC
 
@@ -87,7 +89,7 @@ xset fp rehash 2>/dev/null || true
 
 ### Automation script
 
-Included in the repository is a [`build.sh`](build.sh) script that **automates the setup that follows**. If something doesn't work, then just follow the instructions manually as outlined below. If you figure out what went wrong, [please file a GitHub issue](https://github.com/zorael/maya-in-a-box/issues/new).
+**Included in the repository is a [`build.sh`](build.sh) script that  automates the setup that follows**. If something doesn't work, then just follow the instructions manually as outlined below. If you figure out what went wrong, [please file a GitHub issue](https://github.com/zorael/maya-in-a-box/issues/new).
 
 ### Build the container
 
@@ -101,7 +103,7 @@ podman build \
 
 The `--security-opt label=disable` option is necessary to avoid SELinux issues when creating the image.
 
-This will take *several* minutes.
+This will take *several* minutes and requires Internet access.
 
 ### Create a distrobox of the image
 
@@ -122,9 +124,9 @@ distrobox create \
 
 `--nvidia` enables **Nvidia** integration. Only applicable if you have an Nvidia GPU and you are using the proprietary drivers.
 
-> [*"Be aware that this is not compatible with non-glibc systems and needs somewhat newer distributions to work."*](https://github.com/89luca89/distrobox/blob/main/docs/usage/distrobox-create.md#nvidia-integration)
+> *"Be aware that \[Nvidia integration\] is not compatible with non-glibc systems and needs somewhat newer distributions to work."* - [distrobox documentation](https://github.com/89luca89/distrobox/blob/main/docs/usage/distrobox-create.md#nvidia-integration)
 
-Also see the section [**Using the GPU inside the container**](https://github.com/89luca89/distrobox/blob/main/docs/useful_tips.md#using-the-gpu-inside-the-container) of the [**Useful tips**](https://github.com/89luca89/distrobox/blob/main/docs/useful_tips.md) page of the distrobox documentation.
+Also see the [**Using the GPU inside the container section**](https://github.com/89luca89/distrobox/blob/main/docs/useful_tips.md#using-the-gpu-inside-the-container) of the [**Useful tips page**](https://github.com/89luca89/distrobox/blob/main/docs/useful_tips.md) of the distrobox documentation.
 
 ### First-time setup
 
@@ -161,7 +163,7 @@ rm -rf ~/.distrobox/maya
 
 ### Missing `xhost`
 
-If the program doesn't start upon calling [`maya-run`](maya-run), giving an error about authorisation or display issues, make sure you have the `xhost` tool installed on the host.
+If the program doesn't start upon calling [`maya-run`](maya-run), giving an error about authorisation or display issues to the terminal, make sure you have the `xhost` tool installed on the host.
 
 ```text
 Authorization required, but no authorization protocol specified
@@ -179,17 +181,17 @@ sh /run/host/home/$(id -un)/.distroboxrc  # if inside the container
 
 ### Program starts but never opens a browser
 
-Often with 30-second long delays between steps, as if something is timing out.
+Often with ~30-second long delays between steps, as if something is timing out.
 
 Verify that you aren't running more than one Maya distrobox simultaneously; each distrobox runs its own licensing daemon, and multiple instances can seemingly collide. `distrobox stop` other running distroboxes before starting a new one.
 
 ### Browser login works but the "open product" button doesn't
 
-When you click "open product" in the browser after having successfully logged in, the server returns an `adskidmgr://` *callback URL* that is meant to be passed on to and handled by the Autodesk licensing manager. If it isn't configured correctly and it doesn't resolve the URL scheme as something to be handled by the licensing manager, it may either silently do nothing, or it may pop up a list of applications to choose between; neither of which is what you wanted.
+When you click "open product" in the browser after having successfully logged in, the server returns an `adskidmgr://` *callback URL* that is meant to be passed on to and handled by the Autodesk licensing manager. If it isn't configured correctly and it doesn't resolve the URL scheme as something to be handled by the licensing manager, it may either silently do nothing, or it may pop up a list of applications to choose between; neither of which is desireable.
 
-If it's seemingly doing nothing, first verify that it isn't actually working; it may be that the license was established and Maya is just taking a long time to start up in the background. Refer to the progress bar in the Maya splash window.
+If it's seemingly doing nothing, first verify that it isn't actually working; it may be that the license was established and Maya is just taking a long time to start up in the background. Give it time and refer to the progress bar in the Maya splash window.
 
-The workaround is otherwise to intercept the callback URL that the browser is supposed to pass onto the licensing manager, and then just call it manually in the distrobox.
+The workaround is otherwise to intercept the callback URL that the browser is supposed to pass onto the licensing manager, and then just pass it manually in the distrobox.
 
 As the installed browser automatically pops up (by default [**Brave**](https://brave.com)) as part of Maya's Autodesk account login procedure, hit **F12** to open the developer tools, then go to the **Networks** tab. Perform the normal login until you get to the "**Open Product**" button and finally the non-working "**Open Autodesk Identity Manager**" button (assuming it ever appears). Look for a callback URL in the network requests to show up when you click it. Again: `adskidmgr://`.
 
@@ -203,7 +205,7 @@ Be sure to put the callback URL within quotes.
 
 ### Application Home screen is blank
 
-If the Application Home screen is empty, add `--single-process` to the Maya command line (in [`maya-run`](maya-run)) to work around the issue. See [this comment by meepzh](https://aur.archlinux.org/packages/maya?O=80#comment-871405) on the [**Arch User Repository page for the `maya` package**](https://aur.archlinux.org/packages/maya) for more information.
+If the Application Home screen is empty, add `--single-process` to the Maya command line (in [`maya-run`](maya-run)) to work around the issue. See [**this comment by meepzh**](https://aur.archlinux.org/packages/maya?O=80#comment-871405) on the [**Arch User Repository page for the `maya` package**](https://aur.archlinux.org/packages/maya) for more information.
 
 ### Font errors
 
@@ -225,7 +227,7 @@ This happens (at least) on Wayland but does not seem to be fatal to the Maya sta
 
 ### Some features just don't work
 
-It's impossible to know whether all the dependencies were identified and installed. Some features may not work as expected (or at all) if one or more libraries are missing. The place to start is to use `ldd` on any Maya or plugin binaries that seem relevant. If you figure out what is missing, [please file a GitHub issue](https://github.com/zorael/maya-in-a-box/issues/new).
+It's effectively impossible to know whether all the dependencies were identified and installed. Some features may not work as expected (or at all) if one or more libraries are missing. The place to start is to use `ldd` on any Maya or plugin binaries that seem relevant. If you figure out what is missing, [please file a GitHub issue](https://github.com/zorael/maya-in-a-box/issues/new).
 
 ## Supplementary notes
 
