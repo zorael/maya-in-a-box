@@ -23,8 +23,10 @@ if [[ -f "$MAYA_RUN_PATH" ]]; then
     echo "[!] Wrapper script already exists; not re-exporting" >&2
 else
     echo "[*] Exporting wrapper script"
+    echo
     mkdir -p "$HOST_HOME/.local/bin"
     distrobox-export --bin /usr/local/bin/maya-run
+    echo
 fi
 
 ###############################################################################
