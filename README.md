@@ -85,6 +85,8 @@ for subdir in 100dpi 75dpi; do
 done
 
 xset fp rehash 2>/dev/null || true
+
+unset subdir dir
 ```
 
 ### Automation script
@@ -175,8 +177,8 @@ It may not be installed on Wayland-based desktop environments by default. Refer 
 Once installed, source or execute the `~/.distroboxrc` file to apply the changes:
 
 ```bash
-source ~/.distroboxrc                     # if on the host
-sh /run/host/home/$(id -un)/.distroboxrc  # if inside the container
+source ~/.distroboxrc                       # if on the host
+bash /run/host/home/$(id -un)/.distroboxrc  # if inside the container
 ```
 
 ### Program starts but never opens a browser
@@ -205,7 +207,7 @@ Be sure to put the callback URL within quotes.
 
 ### Application Home screen is blank
 
-If the Application Home screen is empty, add `--single-process` to the Maya command line (in [`maya-run`](maya-run)) to work around the issue. See [**this comment by meepzh**](https://aur.archlinux.org/packages/maya?O=80#comment-871405) on the [**Arch User Repository page for the `maya` package**](https://aur.archlinux.org/packages/maya) for more information.
+If the Application Home screen is empty, add `--single-process` to the Maya command line (in [`maya-run`](maya-run)) to work around the issue. See [**this comment by meepzh**](https://aur.archlinux.org/packages/maya?O=80#comment-871405) on the [**Arch User Repository page for the** `maya` **package**](https://aur.archlinux.org/packages/maya) for more information.
 
 ### Font errors
 
@@ -235,7 +237,7 @@ It's effectively impossible to know whether all the dependencies were identified
 
 The purpose of this file is to [add X11 font paths on the host system](#font-errors), "importing" fonts copied from the container. The copying is done as part of the [`first-run.sh`](first-run.sh) script. Distrobox then *sources* the file on container entry, and the wanted font paths are added. However, on the first run the fonts themselves will not have been copied yet and you get a sequencing problem.
 
-To work around this, immediately after having copied the fonts, [`first-run.sh`](first-run.sh) *executes* [`.distroboxrc`](distroboxrc) using `sh` on the host system. This means that if your file contains anything extra, that extra something has to be safe to be run more than once. It also means that the file should try to keep to `sh` syntax and avoid features specific to other shells, like `bash`.
+To work around this, immediately after having copied the fonts, [`first-run.sh`](first-run.sh) *executes* [`.distroboxrc`](distroboxrc) as a shell script on the host system. If your file contains anything extra in it, that extra something has to be safe to be run more than once.
 
 ### `$HOME`
 
