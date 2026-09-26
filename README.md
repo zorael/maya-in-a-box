@@ -12,7 +12,9 @@ Plugins that are included in the main Maya download are installed automatically:
 - **FlowRetopology**
 - **LookdevX**
 
-Exceptions being **Flow** and **MayaFlow** that require a hosted Flow server. The [**Arnold Renderer**](#arnold-renderer) must additionally be installed separately.
+Exceptions being **Flow** and **MayaFlow** that require a hosted Flow server.
+
+The [**Arnold Renderer**](#arnold-renderer) must additionally be downloaded and installed separately.
 
 Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**EndeavourOS**](https://endeavouros.com) running Wayland sessions (via Xwayland). X11 is untested but it should work even better under it than Wayland.
 
@@ -30,7 +32,8 @@ Tested with success on [**Aurora Linux**](https://getaurora.dev) and [**Endeavou
 - [Uninstallation](#uninstallation)
 - [Troubleshooting](#troubleshooting)
   - [Missing `xhost`](#missing-xhost)
-  - [Program starts but never opens a browser](#program-starts-but-never-opens-a-browser)
+  - [Missing `xset`](#missing-xset)
+  - [Program starts but never opens a browser to login](#program-starts-but-never-opens-a-browser-to-login)
   - [Browser login works but the "open product" button doesn't](#browser-login-works-but-the-open-product-button-doesnt)
   - [Application Home screen is blank](#application-home-screen-is-blank)
   - [Font errors](#font-errors)
@@ -138,7 +141,7 @@ distrobox enter maya -- /opt/maya-install/first-run.sh
 
 ### Expose Maya to the host system
 
-Export the [`maya-run`](maya-run) start-up script and the Maya application `.desktop` file to be available to the host system:
+Export the [`maya-run`](maya-run) start-up script and the Maya application `.desktop` file to be available to the desktop environment on the host system:
 
 ```bash
 distrobox enter maya -- /opt/maya-install/setup-exports.sh
@@ -172,7 +175,7 @@ Authorization required, but no authorization protocol specified
 Can't open display: :0
 ```
 
-It may not be installed on Wayland-based desktop environments by default. Refer to your repositories; the package is commonly called `xhost`, `xorg-xhost` or `x11-xserver-utils`.
+It may not be installed on Wayland-based desktop environments by default. Refer to your repositories; the package is commonly called `xhost`, `xorg-xhost`, `x11-xserver-utils` or `xorg-x11-server-utils`.
 
 Once installed, source or execute the `~/.distroboxrc` file to apply the changes:
 
@@ -181,7 +184,13 @@ source ~/.distroboxrc                       # if on the host
 bash /run/host/home/$(id -un)/.distroboxrc  # if inside the container
 ```
 
-### Program starts but never opens a browser
+### Missing `xset`
+
+You likewise need the `xset` tool to be able to [import X11 fonts](#distroboxrc) from the container to the host system. If it's missing there will probably not be any error message output to the terminal as you enter the distrobox, so you'll only know if/when Maya reports that [fonts were not found](#font-errors).
+
+Refer to your repositories; the package is commonly called `xset`, `xorg-xset`, `x11-xserver-utils` or `xorg-x11-server-utils`.
+
+### Program starts but never opens a browser to login
 
 Often with ~30-second long delays between steps, as if something is timing out.
 
@@ -189,7 +198,7 @@ Verify that you aren't running more than one Maya distrobox simultaneously; each
 
 ### Browser login works but the "open product" button doesn't
 
-When you click "open product" in the browser after having successfully logged in, the server returns an `adskidmgr://` *callback URL* that is meant to be passed on to and handled by the Autodesk licensing manager. If it isn't configured correctly and it doesn't resolve the URL scheme as something to be handled by the licensing manager, it may either silently do nothing, or it may pop up a list of applications to choose between; neither of which is desireable.
+When you click "open product" in the browser after having successfully logged in, the server returns an `adskidmgr://` *callback URL* that is meant to be passed on to and handled by the Autodesk licensing manager. If it isn't configured correctly and it doesn't resolve the URL scheme as something to be handled by the licensing manager, it may either silently do nothing, or it may pop up a list of applications to choose between, neither of which is desirable.
 
 If it's seemingly doing nothing, first verify that it isn't actually working; it may be that the license was established and Maya is just taking a long time to start up in the background. Give it time and refer to the progress bar in the Maya splash window.
 
