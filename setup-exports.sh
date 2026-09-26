@@ -21,6 +21,8 @@ MAYA_RUN_PATH="$HOST_HOME/.local/bin/maya-run"
 
 if [[ -f "$MAYA_RUN_PATH" ]]; then
     echo "[!] Wrapper script already exists; not re-exporting" >&2
+    echo "    Export manually from within the distrobox with \
+'distrobox-export --bin /usr/local/bin/maya-run' if desired" >&2
 else
     echo "[*] Exporting wrapper script"
     echo
@@ -37,6 +39,8 @@ DESKTOP_FULL_NAME="$CONTAINER_ID-$DESKTOP_FILE_NAME"
 
 if [[ -f "$HOST_HOME/.local/share/applications/$DESKTOP_FULL_NAME" ]]; then
     echo "[!] '$DESKTOP_FULL_NAME' already exists; not re-exporting" >&2
+    echo "    Export manually from within the distrobox with \
+'distrobox-export --app Autodesk-Maya2027.desktop' if desired" >&2
 else
     echo "[*] Exporting application .desktop file"
     echo
