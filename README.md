@@ -79,11 +79,11 @@ You must also install [**distrobox**](https://github.com/89luca89/distrobox) and
 Add to [`~/.distroboxrc`](distroboxrc), creating it if necessary:
 
 ```bash
-xhost +si:localuser:"$USER" >/dev/null 2>&1 || true
+xhost +si:localuser:"$USER" &>/dev/null || true
 
 for subdir in 100dpi 75dpi; do
     dir="$HOME/.local/share/x11-fonts/$subdir"
-    [ -d "$dir" ] || continue
+    [[ -d "$dir" ]] || continue
     xset +fp "$dir" 2>/dev/null || true
 done
 
