@@ -38,7 +38,7 @@ DESKTOP_FULL_NAME="$CONTAINER_ID-$DESKTOP_FILE_NAME"
 if [[ -f "$HOST_HOME/.local/share/applications/$DESKTOP_FULL_NAME" ]]; then
     echo "[!] '$DESKTOP_FULL_NAME' already exists; not re-exporting" >&2
 else
-    echo "[*] Exporting .desktop file"
+    echo "[*] Exporting application .desktop file"
     echo
     distrobox-export --app "$DESKTOP_FILE_NAME"
     echo

@@ -17,9 +17,10 @@ echo "[*] Setting up licensing"
 
 ###############################################################################
 
-echo "[*] Copying identity manager desktop file to home applications directory"
+echo "[*] Copying .desktop files to home applications directory"
 mkdir -p ~/.local/share/applications
-cp /opt/maya-install/com.autodesk.AdskIdentityManager.desktop ~/.local/share/applications/
+cp /opt/maya-install/com.autodesk.AdskIdentityManager.desktop \
+    /opt/maya-install/Autodesk-Maya2027.desktop ~/.local/share/applications/
 
 ###############################################################################
 
